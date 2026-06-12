@@ -7,6 +7,12 @@
   
   <!-- Tailwind CSS & FontAwesome -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Konfigurasi Tailwind untuk Dark Mode -->
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+    }
+  </script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <!-- Chart.js -->
@@ -17,26 +23,26 @@
     
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      background-color: #f3f4f6;
       -webkit-tap-highlight-color: transparent;
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
 
     /* Mobile & Desktop Wrapper */
     .app-container {
       width: 100%;
       margin: 0 auto;
-      background-color: #f9fafb;
       min-height: 100vh;
       position: relative;
       overflow-x: hidden;
       display: flex;
       flex-direction: column;
+      transition: background-color 0.3s ease;
     }
 
     /* Page Transitions */
     .page {
       display: none;
-      padding-bottom: 100px; /* Space ekstra untuk bottom nav di HP */
+      padding-bottom: 100px;
       animation: fadeIn 0.3s ease-in-out forwards;
       width: 100%;
       min-height: 100vh;
@@ -50,7 +56,6 @@
 
     /* Custom Glass Effect */
     .glass {
-      background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
     }
@@ -88,20 +93,19 @@
     @media (min-width: 768px) {
       .bottom-nav {
         top: 0;
-        bottom: auto; /* Memindahkan ke Atas */
+        bottom: auto;
         height: 70px;
         padding: 0 2rem;
         border-radius: 0;
-        border-bottom: 1px solid #e5e7eb;
         box-shadow: 0 2px 10px rgba(0,0,0,0.03);
-        justify-content: flex-end; /* Menu di sebelah kanan */
+        justify-content: flex-end; 
       }
 
       .nav-item {
         flex-direction: row;
         padding: 0.5rem 1rem;
         margin-left: 0.5rem;
-        border-radius: 9999px; /* Bentuk pill untuk menu di atas */
+        border-radius: 9999px;
         width: auto;
       }
       
@@ -118,29 +122,19 @@
       }
 
       .nav-item.active {
-        background: #ecfdf5;
         color: #10b981 !important;
       }
       .nav-item.active i { transform: none !important; }
 
-      /* Menggeser halaman konten agar tidak tertutup Top Bar */
-      #view-dashboard {
-        padding-top: 70px; 
-      }
-      #view-input, #view-rekap, #view-setting {
-        padding-top: 100px; /* Lebih renggang untuk halaman selain dashboard */
-      }
-      
-      .page {
-        padding-bottom: 2rem; /* Menghapus spasi bawah untuk desktop */
-      }
+      #view-dashboard { padding-top: 70px; }
+      #view-input, #view-rekap, #view-setting { padding-top: 100px; }
+      .page { padding-bottom: 2rem; }
     }
     
     /* Loader overlay */
     #loader {
       display: none;
       position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(255,255,255,0.85);
       backdrop-filter: blur(5px);
       z-index: 9999;
       justify-content: center;
@@ -157,40 +151,40 @@
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
   </style>
 </head>
-<body class="antialiased text-gray-800">
+<body class="antialiased bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-100">
 
-<div class="app-container">
+<div class="app-container bg-gray-50 dark:bg-gray-900">
   
-  <div id="loader">
-    <div class="spinner mb-3"></div>
-    <p class="text-sm text-gray-600 font-medium tracking-wide">Memproses...</p>
+  <div id="loader" class="bg-white/80 dark:bg-gray-900/80">
+    <div class="spinner mb-3 dark:border-gray-700 dark:border-top-emerald-500"></div>
+    <p class="text-sm text-gray-600 dark:text-gray-300 font-medium tracking-wide">Memproses...</p>
   </div>
 
-  <!-- NAVIGATION BAR (BOTTOM ON MOBILE, TOP ON DESKTOP) -->
-  <nav id="bottom-nav" class="bottom-nav glass hidden">
+  <!-- NAVIGATION BAR -->
+  <nav id="bottom-nav" class="bottom-nav glass bg-white/95 border-t border-gray-100 dark:bg-gray-900/95 dark:border-t-gray-800 md:border-t-0 md:border-b md:border-gray-200 md:dark:border-gray-800 hidden">
     <!-- Desktop Brand Logo -->
     <div class="hidden md:flex items-center mr-auto cursor-pointer">
        <div class="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center text-white text-sm shadow-sm mr-3">
          <i class="fa-solid fa-mosque"></i>
        </div>
        <div>
-         <h1 class="font-bold text-gray-800 text-sm leading-tight">Wali 9 P2S</h1>
+         <h1 class="font-bold text-gray-800 dark:text-white text-sm leading-tight">Wali 9 P2S</h1>
        </div>
     </div>
 
-    <button onclick="navTo('dashboard')" class="nav-item active text-gray-400" id="nav-dashboard">
+    <button onclick="navTo('dashboard')" class="nav-item active text-gray-400 dark:text-gray-500 dark:hover:bg-gray-800 md:active:bg-emerald-50 md:dark:active:bg-emerald-500/10" id="nav-dashboard">
       <i class="fa-solid fa-house text-xl mb-1"></i>
       <span class="text-[10px] font-semibold tracking-wide">Home</span>
     </button>
-    <button onclick="navTo('input')" class="nav-item text-gray-400" id="nav-input">
+    <button onclick="navTo('input')" class="nav-item text-gray-400 dark:text-gray-500 dark:hover:bg-gray-800 md:active:bg-emerald-50 md:dark:active:bg-emerald-500/10" id="nav-input">
       <i class="fa-solid fa-circle-plus text-xl mb-1"></i>
       <span class="text-[10px] font-semibold tracking-wide">Input</span>
     </button>
-    <button onclick="navTo('rekap')" class="nav-item text-gray-400" id="nav-rekap">
+    <button onclick="navTo('rekap')" class="nav-item text-gray-400 dark:text-gray-500 dark:hover:bg-gray-800 md:active:bg-emerald-50 md:dark:active:bg-emerald-500/10" id="nav-rekap">
       <i class="fa-solid fa-file-lines text-xl mb-1"></i>
       <span class="text-[10px] font-semibold tracking-wide">Rekap</span>
     </button>
-    <button onclick="navTo('setting')" class="nav-item text-gray-400" id="nav-setting">
+    <button onclick="navTo('setting')" class="nav-item text-gray-400 dark:text-gray-500 dark:hover:bg-gray-800 md:active:bg-emerald-50 md:dark:active:bg-emerald-500/10" id="nav-setting">
       <i class="fa-solid fa-gear text-xl mb-1"></i>
       <span class="text-[10px] font-semibold tracking-wide">Setting</span>
     </button>
@@ -199,89 +193,93 @@
   <div class="w-full">
     
     <!-- LOGIN PAGE -->
-    <div id="view-login" class="page active bg-gray-50 relative z-[100]">
+    <div id="view-login" class="page active relative z-[100]">
       <div class="flex flex-col items-center justify-center px-6 h-screen w-full">
         <div class="w-16 h-16 bg-emerald-500 rounded-2xl flex items-center justify-center text-white text-3xl shadow-lg mb-6">
           <i class="fa-solid fa-mosque"></i>
         </div>
-        <h1 class="text-2xl font-bold text-center text-gray-800">Wali 9 P2S</h1>
-        <p class="text-gray-500 text-center mb-10">Ponpes Abu Zairi</p>
+        <h1 class="text-2xl font-bold text-center text-gray-800 dark:text-white">Wali 9 P2S</h1>
+        <p class="text-gray-500 dark:text-gray-400 text-center mb-10">Ponpes Abu Zairi</p>
         
-        <div class="w-full max-w-sm bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-gray-100">
-          <h2 class="text-lg font-semibold mb-4 text-center">Masuk Akun</h2>
-          <input type="password" id="login-pass" placeholder="Masukkan Password" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 mb-4 transition" onkeypress="if(event.key === 'Enter') doLogin()">
+        <div class="w-full max-w-sm bg-white dark:bg-gray-800 p-6 md:p-8 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700">
+          <h2 class="text-lg font-semibold mb-4 text-center text-gray-800 dark:text-white">Masuk Akun</h2>
+          <input type="password" id="login-pass" placeholder="Masukkan Password" class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 mb-4 transition" onkeypress="if(event.key === 'Enter') doLogin()">
           <button onclick="doLogin()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-3 rounded-xl transition shadow-md hover:shadow-lg">
             Masuk <i class="fa-solid fa-arrow-right ml-2"></i>
           </button>
-          <p class="text-xs text-center text-gray-400 mt-4">Ketik apa saja untuk masuk mode Preview</p>
+          <p class="text-xs text-center text-gray-400 dark:text-gray-500 mt-4">Ketik apa saja untuk masuk mode Preview</p>
         </div>
       </div>
     </div>
 
     <!-- DASHBOARD PAGE -->
     <div id="view-dashboard" class="page">
-      <!-- Di desktop, banner hijau berubah menjadi banner floating melengkung -->
-      <div class="bg-emerald-500 rounded-b-[2rem] md:rounded-3xl md:mx-10 md:mt-6 pb-12 shadow-md">
+      <div class="bg-emerald-500 rounded-b-[2rem] md:rounded-3xl md:mx-10 md:mt-6 pb-14 shadow-md transition-all">
         <div class="p-6 md:py-8 md:px-10 max-w-6xl mx-auto text-white">
           <div class="flex justify-between items-center mb-6">
             <div>
-              <h2 class="text-sm font-medium opacity-80 md:text-base">Selamat Datang,</h2>
+              <h2 class="text-sm font-medium opacity-90 md:text-base text-emerald-50">Selamat Datang,</h2>
               <h1 class="text-xl md:text-2xl font-bold">Admin Wali 9</h1>
             </div>
-            <div class="w-10 h-10 md:w-12 md:h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm shadow-sm hover:bg-white/30 transition cursor-pointer">
-              <i class="fa-solid fa-bell md:text-lg"></i>
+            <div class="flex space-x-3">
+              <!-- Tombol Tema (Quick Toggle) -->
+              <div onclick="toggleTheme()" class="w-10 h-10 md:w-12 md:h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm shadow-sm hover:bg-white/30 transition cursor-pointer">
+                <i id="header-theme-icon" class="fa-solid fa-moon md:text-lg"></i>
+              </div>
+              <div class="w-10 h-10 md:w-12 md:h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm shadow-sm hover:bg-white/30 transition cursor-pointer">
+                <i class="fa-solid fa-bell md:text-lg"></i>
+              </div>
             </div>
           </div>
           <div class="flex justify-between items-end">
             <div>
-              <p class="text-sm opacity-90 mb-1">Total Saldo Kas</p>
+              <p class="text-sm opacity-90 mb-1 text-emerald-50">Total Saldo Kas</p>
               <h1 class="text-4xl md:text-5xl font-bold tracking-tight" id="dash-saldo">Rp 0</h1>
             </div>
-            <!-- Filter Data -->
             <select id="filter-period" onchange="loadDashboard()" class="bg-white/20 text-white text-xs md:text-sm rounded-lg px-2 py-1.5 md:px-3 md:py-2 backdrop-blur-sm border border-white/30 focus:outline-none cursor-pointer">
-              <option value="bulan_ini" class="text-gray-800">Bulan Ini</option>
-              <option value="semua" class="text-gray-800">Semua Waktu</option>
+              <option value="bulan_ini" class="text-gray-800 dark:text-gray-100 dark:bg-gray-800">Bulan Ini</option>
+              <option value="semua" class="text-gray-800 dark:text-gray-100 dark:bg-gray-800">Semua Waktu</option>
             </select>
           </div>
         </div>
       </div>
 
       <div class="max-w-6xl mx-auto">
-        <!-- Cards Summary -->
-        <div class="px-6 md:px-14 -mt-8 relative z-10 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-          <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center space-x-3 hover:shadow-md transition">
-            <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-500">
-              <i class="fa-solid fa-arrow-down md:text-lg"></i>
+        <!-- PERBAIKAN: Posisi Cards Summary (Pemasukan/Pengeluaran) menjadi 2 grid simetris di semua ukuran layar -->
+        <div class="px-6 md:px-10 -mt-10 relative z-10 grid grid-cols-2 gap-4 md:gap-8">
+          <div class="bg-white dark:bg-gray-800 p-4 md:p-6 rounded-2xl shadow-md border border-gray-50 dark:border-gray-700 flex flex-col md:flex-row md:items-center space-y-3 md:space-y-0 md:space-x-4 hover:shadow-lg transition">
+            <div class="w-10 h-10 md:w-14 md:h-14 rounded-full bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center text-emerald-500">
+              <i class="fa-solid fa-arrow-down md:text-xl"></i>
             </div>
             <div>
-              <p class="text-[11px] md:text-xs text-gray-500 uppercase tracking-wide font-semibold">Pemasukan</p>
-              <p class="text-sm md:text-lg font-bold text-gray-800" id="dash-in">Rp 0</p>
+              <p class="text-[11px] md:text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide font-semibold">Pemasukan</p>
+              <p class="text-sm md:text-xl font-bold text-gray-800 dark:text-white" id="dash-in">Rp 0</p>
             </div>
           </div>
-          <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center space-x-3 hover:shadow-md transition">
-            <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-red-50 flex items-center justify-center text-red-500">
-              <i class="fa-solid fa-arrow-up md:text-lg"></i>
+          <div class="bg-white dark:bg-gray-800 p-4 md:p-6 rounded-2xl shadow-md border border-gray-50 dark:border-gray-700 flex flex-col md:flex-row md:items-center space-y-3 md:space-y-0 md:space-x-4 hover:shadow-lg transition">
+            <div class="w-10 h-10 md:w-14 md:h-14 rounded-full bg-red-50 dark:bg-red-500/10 flex items-center justify-center text-red-500">
+              <i class="fa-solid fa-arrow-up md:text-xl"></i>
             </div>
             <div>
-              <p class="text-[11px] md:text-xs text-gray-500 uppercase tracking-wide font-semibold">Pengeluaran</p>
-              <p class="text-sm md:text-lg font-bold text-gray-800" id="dash-out">Rp 0</p>
+              <p class="text-[11px] md:text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide font-semibold">Pengeluaran</p>
+              <p class="text-sm md:text-xl font-bold text-gray-800 dark:text-white" id="dash-out">Rp 0</p>
             </div>
           </div>
         </div>
 
-        <!-- NEW: Insight & Chart Row -->
-        <div class="px-6 md:px-14 mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+        <!-- Insight & Chart Row -->
+        <div class="px-6 md:px-10 mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
           <!-- Insights Card -->
-          <div class="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition">
-            <h3 class="font-bold text-gray-800 mb-3 flex items-center"><i class="fa-solid fa-lightbulb text-amber-400 mr-2"></i> Insight Data</h3>
-            <ul id="dash-insights" class="space-y-3 text-sm text-gray-600">
+          <div class="bg-white dark:bg-gray-800 p-5 md:p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition">
+            <h3 class="font-bold text-gray-800 dark:text-white mb-3 flex items-center"><i class="fa-solid fa-lightbulb text-amber-400 mr-2"></i> Insight Data</h3>
+            <ul id="dash-insights" class="space-y-3 text-sm text-gray-600 dark:text-gray-300">
                <!-- Injected via JS -->
             </ul>
           </div>
 
           <!-- Chart Card -->
-          <div class="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition">
-             <h3 class="font-bold text-gray-800 mb-4 flex items-center"><i class="fa-solid fa-chart-line text-emerald-500 mr-2"></i> Arus Kas (7 Hari)</h3>
+          <div class="bg-white dark:bg-gray-800 p-5 md:p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition">
+             <h3 class="font-bold text-gray-800 dark:text-white mb-4 flex items-center"><i class="fa-solid fa-chart-line text-emerald-500 mr-2"></i> Arus Kas (7 Hari)</h3>
              <div class="relative h-40 w-full">
                <canvas id="cashFlowChart"></canvas>
              </div>
@@ -289,9 +287,9 @@
         </div>
 
         <!-- Recent Transactions -->
-        <div class="px-6 md:px-14 mt-6 md:mt-10">
+        <div class="px-6 md:px-10 mt-6 md:mt-10">
           <div class="flex justify-between items-end mb-4">
-            <h3 class="font-bold text-gray-800 md:text-lg">Transaksi Terakhir</h3>
+            <h3 class="font-bold text-gray-800 dark:text-white md:text-lg">Transaksi Terakhir</h3>
             <button onclick="navTo('rekap')" class="text-xs md:text-sm font-semibold text-emerald-500 hover:text-emerald-600 transition">Lihat Semua</button>
           </div>
           <div id="dash-history" class="space-y-3 md:space-y-4">
@@ -304,21 +302,21 @@
     <!-- INPUT PAGE -->
     <div id="view-input" class="page px-6 md:px-10 pt-6">
       <div class="max-w-3xl mx-auto">
-        <h2 class="text-2xl font-bold text-gray-800 mb-6">Input Transaksi</h2>
-        <div class="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-gray-100">
+        <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-6">Input Transaksi</h2>
+        <div class="bg-white dark:bg-gray-800 p-6 md:p-8 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700">
           <form id="form-input" onsubmit="event.preventDefault(); submitTransaksi();">
             <div class="mb-5">
-              <label class="block text-sm font-semibold text-gray-600 mb-3">Tipe Transaksi</label>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-300 mb-3">Tipe Transaksi</label>
               <div class="grid grid-cols-2 gap-4">
                 <label class="cursor-pointer">
                   <input type="radio" name="tipe" value="Pemasukan" class="peer sr-only" checked>
-                  <div class="text-center px-4 py-3 md:py-4 rounded-xl border border-gray-200 peer-checked:bg-emerald-50 peer-checked:border-emerald-500 peer-checked:text-emerald-600 font-medium transition hover:bg-gray-50">
+                  <div class="text-center px-4 py-3 md:py-4 rounded-xl border border-gray-200 dark:border-gray-700 peer-checked:bg-emerald-50 peer-checked:dark:bg-emerald-500/10 peer-checked:border-emerald-500 peer-checked:text-emerald-600 dark:text-gray-300 font-medium transition hover:bg-gray-50 dark:hover:bg-gray-700">
                     <i class="fa-solid fa-arrow-down mr-1"></i> Pemasukan
                   </div>
                 </label>
                 <label class="cursor-pointer">
                   <input type="radio" name="tipe" value="Pengeluaran" class="peer sr-only">
-                  <div class="text-center px-4 py-3 md:py-4 rounded-xl border border-gray-200 peer-checked:bg-red-50 peer-checked:border-red-500 peer-checked:text-red-600 font-medium transition hover:bg-gray-50">
+                  <div class="text-center px-4 py-3 md:py-4 rounded-xl border border-gray-200 dark:border-gray-700 peer-checked:bg-red-50 peer-checked:dark:bg-red-500/10 peer-checked:border-red-500 peer-checked:text-red-600 dark:text-gray-300 font-medium transition hover:bg-gray-50 dark:hover:bg-gray-700">
                     <i class="fa-solid fa-arrow-up mr-1"></i> Pengeluaran
                   </div>
                 </label>
@@ -326,18 +324,18 @@
             </div>
             
             <div class="mb-5">
-              <label class="block text-sm font-semibold text-gray-600 mb-2">Tanggal</label>
-              <input type="date" id="input-tanggal" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500">
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-300 mb-2">Tanggal</label>
+              <input type="date" id="input-tanggal" required class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 [color-scheme:light] dark:[color-scheme:dark]">
             </div>
 
             <div class="mb-5">
-              <label class="block text-sm font-semibold text-gray-600 mb-2">Nominal (Rp)</label>
-              <input type="number" id="input-nominal" required placeholder="0" class="w-full px-4 py-3 text-2xl font-bold bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500">
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-300 mb-2">Nominal (Rp)</label>
+              <input type="number" id="input-nominal" required placeholder="0" class="w-full px-4 py-3 text-2xl font-bold bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500">
             </div>
 
             <div class="mb-8">
-              <label class="block text-sm font-semibold text-gray-600 mb-2">Keterangan</label>
-              <textarea id="input-keterangan" required rows="3" placeholder="Contoh: Iuran bulanan / Beli ATK" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"></textarea>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-300 mb-2">Keterangan</label>
+              <textarea id="input-keterangan" required rows="3" placeholder="Contoh: Iuran bulanan / Beli ATK" class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"></textarea>
             </div>
 
             <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 rounded-xl shadow-md transition text-lg flex items-center justify-center">
@@ -351,14 +349,14 @@
     <!-- REKAP PAGE -->
     <div id="view-rekap" class="page px-6 md:px-10 pt-6">
       <div class="max-w-5xl mx-auto">
-        <h2 class="text-2xl font-bold text-gray-800 mb-6">Rekapitulasi</h2>
+        <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-6">Rekapitulasi</h2>
         
-        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden min-h-[400px]">
-          <div class="p-5 bg-gray-50 border-b border-gray-100 flex justify-between items-center">
-            <span class="font-semibold text-gray-600 text-sm md:text-base">Riwayat Lengkap Transaksi</span>
-            <button onclick="loadRekap()" class="text-emerald-500 hover:rotate-180 transition duration-500 w-8 h-8 flex items-center justify-center rounded-full hover:bg-emerald-50"><i class="fa-solid fa-rotate-right"></i></button>
+        <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden min-h-[400px]">
+          <div class="p-5 bg-gray-50 dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center">
+            <span class="font-semibold text-gray-600 dark:text-gray-300 text-sm md:text-base">Riwayat Lengkap Transaksi</span>
+            <button onclick="loadRekap()" class="text-emerald-500 hover:rotate-180 transition duration-500 w-8 h-8 flex items-center justify-center rounded-full hover:bg-emerald-50 dark:hover:bg-emerald-500/10"><i class="fa-solid fa-rotate-right"></i></button>
           </div>
-          <div id="rekap-list" class="divide-y divide-gray-100">
+          <div id="rekap-list" class="divide-y divide-gray-100 dark:divide-gray-800">
             <!-- Injected via JS -->
           </div>
         </div>
@@ -368,35 +366,53 @@
     <!-- SETTING PAGE -->
     <div id="view-setting" class="page px-6 md:px-10 pt-6">
       <div class="max-w-3xl mx-auto">
-        <h2 class="text-2xl font-bold text-gray-800 mb-6">Pengaturan</h2>
+        <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-6">Pengaturan</h2>
         
-        <div class="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-gray-100 mb-6">
-          <h3 class="font-bold text-gray-700 mb-5 border-b pb-3"><i class="fa-solid fa-lock mr-2 text-emerald-500"></i> Ubah Password</h3>
-          
+        <!-- Tema & Tampilan -->
+        <div class="bg-white dark:bg-gray-800 p-6 md:p-8 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
+          <h3 class="font-bold text-gray-700 dark:text-gray-200 mb-5 border-b border-gray-100 dark:border-gray-700 pb-3 flex items-center justify-between">
+            <span><i class="fa-solid fa-palette mr-2 text-emerald-500"></i> Tema Tampilan</span>
+          </h3>
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-semibold text-gray-800 dark:text-gray-100">Mode Gelap (Dark Mode)</p>
+              <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Ubah tampilan menjadi gelap agar nyaman di mata.</p>
+            </div>
+            <!-- Toggle Switch -->
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" id="theme-toggle-switch" class="sr-only peer" onchange="toggleTheme()">
+              <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-emerald-500"></div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Akun Keamanan -->
+        <div class="bg-white dark:bg-gray-800 p-6 md:p-8 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
+          <h3 class="font-bold text-gray-700 dark:text-gray-200 mb-5 border-b border-gray-100 dark:border-gray-700 pb-3"><i class="fa-solid fa-lock mr-2 text-emerald-500"></i> Ubah Password</h3>
           <div class="space-y-4 md:space-y-5">
             <div>
-              <label class="block text-xs md:text-sm font-semibold text-gray-500 mb-1.5">Password Lama</label>
-              <input type="password" id="set-pass-lama" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500">
+              <label class="block text-xs md:text-sm font-semibold text-gray-500 dark:text-gray-400 mb-1.5">Password Lama</label>
+              <input type="password" id="set-pass-lama" class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500">
             </div>
             <div>
-              <label class="block text-xs md:text-sm font-semibold text-gray-500 mb-1.5">Password Baru</label>
-              <input type="password" id="set-pass-baru" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500">
+              <label class="block text-xs md:text-sm font-semibold text-gray-500 dark:text-gray-400 mb-1.5">Password Baru</label>
+              <input type="password" id="set-pass-baru" class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500">
             </div>
-            <button onclick="submitUbahPassword()" class="w-full bg-gray-800 text-white font-semibold py-3 rounded-xl mt-4 hover:bg-gray-700 transition">
+            <button onclick="submitUbahPassword()" class="w-full bg-gray-800 dark:bg-gray-700 text-white font-semibold py-3 rounded-xl mt-4 hover:bg-gray-700 dark:hover:bg-gray-600 transition">
               Update Password
             </button>
           </div>
         </div>
 
-        <div class="bg-red-50 p-6 rounded-3xl border border-red-100 text-center hover:bg-red-100 transition cursor-pointer" onclick="logout()">
+        <div class="bg-red-50 dark:bg-red-500/10 p-6 rounded-3xl border border-red-100 dark:border-red-500/20 text-center hover:bg-red-100 dark:hover:bg-red-500/30 transition cursor-pointer" onclick="logout()">
           <button class="text-red-500 font-bold w-full py-2 flex items-center justify-center text-lg">
             <i class="fa-solid fa-sign-out-alt mr-2"></i> Keluar Aplikasi
           </button>
         </div>
         
         <div class="text-center mt-10 opacity-50 pb-8">
-          <p class="text-xs md:text-sm font-medium">Aplikasi Wali 9 P2S Abu Zairi</p>
-          <p class="text-[10px] md:text-xs">Versi 1.3 • Desktop Topbar Update</p>
+          <p class="text-xs md:text-sm font-medium dark:text-white">Aplikasi Wali 9 P2S Abu Zairi</p>
+          <p class="text-[10px] md:text-xs dark:text-gray-300">Versi 1.4 • Dark Mode & Layout Refined</p>
         </div>
       </div>
     </div>
@@ -406,7 +422,7 @@
 
 <script>
   // ==========================================================
-  // KONFIGURASI API
+  // KONFIGURASI API & THEME
   // ==========================================================
   const API_URL = "https://script.google.com/macros/s/AKfycbwIQ_jy1OPTTrrwQvA9nyT7-AylRfBm7Rh154wdP7Z77mzdMCOesHJzz97NZksyupPh/exec"; 
 
@@ -414,6 +430,48 @@
   const showLoader = () => document.getElementById('loader').style.display = 'flex';
   const hideLoader = () => document.getElementById('loader').style.display = 'none';
 
+  // --- DARK MODE LOGIC ---
+  let isDarkMode = false;
+  
+  function initTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+      document.documentElement.classList.add('dark');
+      isDarkMode = true;
+    }
+    updateThemeUI();
+  }
+
+  function toggleTheme() {
+    document.documentElement.classList.toggle('dark');
+    isDarkMode = document.documentElement.classList.contains('dark');
+    localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+    updateThemeUI();
+    // Jika chart sudah ada, render ulang agar warna teks sesuai tema
+    if (window.currentChartData) {
+      renderChart(window.currentChartData.labels, window.currentChartData.dataIn, window.currentChartData.dataOut);
+    }
+  }
+
+  function updateThemeUI() {
+    // Update ikon di header
+    const icon = document.getElementById('header-theme-icon');
+    if(icon) {
+      icon.className = isDarkMode ? 'fa-solid fa-sun md:text-lg text-amber-300' : 'fa-solid fa-moon md:text-lg';
+    }
+    // Update switch di setting
+    const toggleSwitch = document.getElementById('theme-toggle-switch');
+    if(toggleSwitch) {
+      toggleSwitch.checked = isDarkMode;
+    }
+  }
+
+  // Jalankan inisialisasi tema saat aplikasi dimuat
+  initTheme();
+
+
+  // --- DUMMY DATA ---
   let dummyStorage = [
     {id: 'TX-1', tanggal: '12 Jun 2026', tipe: 'Pemasukan', nominal: 2500000, keterangan: 'Saldo Awal Bulan'},
     {id: 'TX-2', tanggal: '13 Jun 2026', tipe: 'Pengeluaran', nominal: 150000, keterangan: 'Beli Kebutuhan ATK'},
@@ -448,7 +506,6 @@
             let historyLimit = dummyStorage.slice(0, 5); 
             dummyStorage.forEach(t => { if(t.tipe === 'Pemasukan') masuk += t.nominal; else keluar += t.nominal; });
             
-            // Dummy logic untuk filter & chart
             let isBulanIni = (payload && payload.filter === 'bulan_ini');
             resolve({ 
               saldoTotal: masuk - keluar, 
@@ -474,9 +531,15 @@
   let cashFlowChartInstance = null;
 
   function renderChart(labels, dataIn, dataOut) {
+    // Simpan data untuk render ulang ketika tema diganti
+    window.currentChartData = { labels, dataIn, dataOut };
+    
     const ctx = document.getElementById('cashFlowChart').getContext('2d');
     if (cashFlowChartInstance) cashFlowChartInstance.destroy();
     
+    const textColor = isDarkMode ? '#9ca3af' : '#6b7280'; // gray-400 vs gray-500
+    const gridColor = isDarkMode ? '#374151' : '#f3f4f6'; // gray-700 vs gray-100
+
     cashFlowChartInstance = new Chart(ctx, {
       type: 'line',
       data: {
@@ -490,14 +553,15 @@
         responsive: true, maintainAspectRatio: false,
         plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false } },
         scales: {
-          x: { grid: { display: false }, ticks: { font: {size: 10} } },
-          y: { grid: { borderDash: [4, 4], color: '#f3f4f6' }, ticks: { display: false } }
+          x: { grid: { display: false }, ticks: { font: {size: 10}, color: textColor } },
+          y: { grid: { borderDash: [4, 4], color: gridColor }, ticks: { display: false } }
         },
         interaction: { mode: 'nearest', axis: 'x', intersect: false }
       }
     });
   }
 
+  // --- NAVIGATION & LOGIC ---
   function navTo(viewName) {
     document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
@@ -521,9 +585,9 @@
     if(res.success) {
       document.getElementById('bottom-nav').classList.remove('hidden');
       navTo('dashboard');
-      Swal.fire({ title: 'Berhasil', text: 'Selamat Datang!', icon: 'success', timer: 1500, showConfirmButton: false });
+      Swal.fire({ title: 'Berhasil', text: 'Selamat Datang!', icon: 'success', timer: 1500, showConfirmButton: false, background: isDarkMode ? '#1f2937' : '#fff', color: isDarkMode ? '#fff' : '#545454' });
     } else {
-      Swal.fire('Gagal', res.message, 'error');
+      Swal.fire({ title: 'Gagal', text: res.message, icon: 'error', background: isDarkMode ? '#1f2937' : '#fff', color: isDarkMode ? '#fff' : '#545454' });
     }
   }
 
@@ -541,13 +605,10 @@
     const res = await callAPI('getDashboardData', { filter: filterVal });
     hideLoader();
 
-    // Set Total Saldo (Selalu dihitung seluruhnya untuk akurasi Kas di Tangan)
     document.getElementById('dash-saldo').innerText = formatRupiah(res.saldoTotal);
-    // Set Pemasukan & Pengeluaran (Berdasarkan Filter)
     document.getElementById('dash-in').innerText = formatRupiah(res.pemasukan);
     document.getElementById('dash-out').innerText = formatRupiah(res.pengeluaran);
     
-    // Render Insight Text
     let insightHTML = '';
     if(res.insights && res.insights.length > 0) {
        res.insights.forEach(txt => {
@@ -556,24 +617,22 @@
     }
     document.getElementById('dash-insights').innerHTML = insightHTML || '<p class="text-sm text-gray-400">Belum ada insight.</p>';
 
-    // Render Chart 7 Hari Terakhir
     if (res.chart) renderChart(res.chart.labels, res.chart.dataIn, res.chart.dataOut);
 
-    // Render Histori 5 Transaksi Terakhir
     let histHTML = '';
     if(res.history.length === 0) histHTML = '<p class="text-sm text-gray-400 text-center py-4">Belum ada transaksi.</p>';
     
     res.history.forEach(tx => {
       const isMin = tx.tipe === 'Pengeluaran';
       histHTML += `
-        <div class="bg-white p-4 md:p-5 rounded-2xl shadow-sm flex items-center justify-between border border-gray-50 hover:shadow-md transition">
+        <div class="bg-white dark:bg-gray-800 p-4 md:p-5 rounded-2xl shadow-sm flex items-center justify-between border border-gray-50 dark:border-gray-700 hover:shadow-md transition">
           <div class="flex items-center space-x-4">
-            <div class="w-10 h-10 md:w-12 md:h-12 rounded-full ${isMin ? 'bg-red-50 text-red-500' : 'bg-emerald-50 text-emerald-500'} flex items-center justify-center">
+            <div class="w-10 h-10 md:w-12 md:h-12 rounded-full ${isMin ? 'bg-red-50 dark:bg-red-500/10 text-red-500' : 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-500'} flex items-center justify-center">
               <i class="fa-solid ${isMin ? 'fa-arrow-up' : 'fa-arrow-down'}"></i>
             </div>
             <div>
-              <p class="text-sm md:text-base font-bold text-gray-800">${tx.keterangan}</p>
-              <p class="text-xs md:text-sm text-gray-400 mt-0.5">${tx.tanggal}</p>
+              <p class="text-sm md:text-base font-bold text-gray-800 dark:text-gray-100">${tx.keterangan}</p>
+              <p class="text-xs md:text-sm text-gray-400 dark:text-gray-500 mt-0.5">${tx.tanggal}</p>
             </div>
           </div>
           <span class="font-bold text-sm md:text-base ${isMin ? 'text-red-500' : 'text-emerald-500'}">
@@ -593,7 +652,7 @@
     };
 
     if(!payload.tanggal || !payload.nominal || !payload.keterangan) {
-      return Swal.fire('Peringatan', 'Lengkapi semua field', 'warning');
+      return Swal.fire({ title: 'Peringatan', text: 'Lengkapi semua field', icon: 'warning', background: isDarkMode ? '#1f2937' : '#fff', color: isDarkMode ? '#fff' : '#545454' });
     }
 
     showLoader();
@@ -601,11 +660,11 @@
     hideLoader();
 
     if(res.success) {
-      Swal.fire('Berhasil', res.message, 'success');
+      Swal.fire({ title: 'Berhasil', text: res.message, icon: 'success', background: isDarkMode ? '#1f2937' : '#fff', color: isDarkMode ? '#fff' : '#545454' });
       document.getElementById('form-input').reset();
       document.getElementById('input-tanggal').valueAsDate = new Date();
     } else {
-      Swal.fire('Gagal', res.message, 'error');
+      Swal.fire({ title: 'Gagal', text: res.message, icon: 'error', background: isDarkMode ? '#1f2937' : '#fff', color: isDarkMode ? '#fff' : '#545454' });
     }
   }
 
@@ -617,18 +676,18 @@
     hideLoader();
 
     let html = '';
-    if(!res || res.length === 0) html = '<div class="p-10 text-center text-gray-400"><i class="fa-regular fa-folder-open text-5xl mb-4 opacity-50"></i><p class="text-base">Data masih kosong</p></div>';
+    if(!res || res.length === 0) html = '<div class="p-10 text-center text-gray-400 dark:text-gray-600"><i class="fa-regular fa-folder-open text-5xl mb-4 opacity-50"></i><p class="text-base">Data masih kosong</p></div>';
     
     res.forEach(tx => {
       const isMin = tx.tipe === 'Pengeluaran';
       html += `
-        <div class="p-5 flex items-center justify-between hover:bg-gray-50 transition">
+        <div class="p-5 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700/50 transition">
           <div>
-            <p class="font-bold text-sm md:text-base text-gray-800">${tx.keterangan}</p>
-            <div class="flex space-x-2 text-xs md:text-sm text-gray-500 mt-1.5 items-center">
+            <p class="font-bold text-sm md:text-base text-gray-800 dark:text-gray-100">${tx.keterangan}</p>
+            <div class="flex space-x-2 text-xs md:text-sm text-gray-500 dark:text-gray-400 mt-1.5 items-center">
               <span><i class="fa-regular fa-calendar mr-1"></i>${tx.tanggal}</span>
-              <span class="text-gray-300">•</span>
-              <span class="${isMin ? 'text-red-500' : 'text-emerald-500'} font-medium bg-${isMin?'red':'emerald'}-50 px-2 py-0.5 rounded-md">${tx.tipe}</span>
+              <span class="text-gray-300 dark:text-gray-600">•</span>
+              <span class="${isMin ? 'text-red-500' : 'text-emerald-500'} font-medium bg-${isMin?'red':'emerald'}-50 dark:bg-${isMin?'red':'emerald'}-500/10 px-2 py-0.5 rounded-md">${tx.tipe}</span>
             </div>
           </div>
           <div class="font-bold text-sm md:text-base ${isMin ? 'text-red-500' : 'text-emerald-500'}">
@@ -644,18 +703,18 @@
     const lama = document.getElementById('set-pass-lama').value;
     const baru = document.getElementById('set-pass-baru').value;
     
-    if(!lama || !baru) return Swal.fire('Info', 'Isi password lama dan baru', 'warning');
+    if(!lama || !baru) return Swal.fire({ title: 'Info', text: 'Isi password lama dan baru', icon: 'warning', background: isDarkMode ? '#1f2937' : '#fff', color: isDarkMode ? '#fff' : '#545454' });
 
     showLoader();
     const res = await callAPI('ubahPassword', { passLama: lama, passBaru: baru });
     hideLoader();
 
     if(res.success) {
-      Swal.fire('Berhasil', res.message, 'success');
+      Swal.fire({ title: 'Berhasil', text: res.message, icon: 'success', background: isDarkMode ? '#1f2937' : '#fff', color: isDarkMode ? '#fff' : '#545454' });
       document.getElementById('set-pass-lama').value = '';
       document.getElementById('set-pass-baru').value = '';
     } else {
-      Swal.fire('Gagal', res.message, 'error');
+      Swal.fire({ title: 'Gagal', text: res.message, icon: 'error', background: isDarkMode ? '#1f2937' : '#fff', color: isDarkMode ? '#fff' : '#545454' });
     }
   }
 
