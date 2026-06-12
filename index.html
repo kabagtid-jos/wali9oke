@@ -214,8 +214,9 @@
 
     <!-- DASHBOARD PAGE -->
     <div id="view-dashboard" class="page">
-      <div class="bg-emerald-500 rounded-b-[2rem] md:rounded-3xl md:mx-10 md:mt-6 pb-14 shadow-md transition-all">
-        <div class="p-6 md:py-8 md:px-10 max-w-6xl mx-auto text-white">
+      <!-- PERBAIKAN: Menambahkan 'w-full max-w-6xl mx-auto' dan menghapus 'md:mx-10' agar lebar banner tidak melebar tak terbatas dan sejajar dengan kartu di bawahnya -->
+      <div class="bg-emerald-500 rounded-b-[2rem] md:rounded-3xl w-full max-w-6xl mx-auto md:mt-6 pb-14 shadow-md transition-all">
+        <div class="p-6 md:py-8 md:px-10 text-white">
           <div class="flex justify-between items-center mb-6">
             <div>
               <h2 class="text-sm font-medium opacity-90 md:text-base text-emerald-50">Selamat Datang,</h2>
@@ -226,9 +227,7 @@
               <div onclick="toggleTheme()" class="w-10 h-10 md:w-12 md:h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm shadow-sm hover:bg-white/30 transition cursor-pointer">
                 <i id="header-theme-icon" class="fa-solid fa-moon md:text-lg"></i>
               </div>
-              <div class="w-10 h-10 md:w-12 md:h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm shadow-sm hover:bg-white/30 transition cursor-pointer">
-                <i class="fa-solid fa-bell md:text-lg"></i>
-              </div>
+              <!-- Ikon Notifikasi telah dihapus -->
             </div>
           </div>
           <div class="flex justify-between items-end">
