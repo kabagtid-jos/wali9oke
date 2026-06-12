@@ -535,9 +535,13 @@
             let targetYear = payload && payload.filter ? payload.filter : dummyTahun[0];
             let chartIn = [0,0,0,0,0,0,0,0,0,0,0,0];
             let chartOut = [0,0,0,0,0,0,0,0,0,0,0,0];
+            
+            let uniqueYears = new Set(dummyTahun); // Mengumpulkan tahun dari dummy manual
 
             dummyStorage.forEach(t => { 
               let txYear = t.tanggal.split(' ')[2]; // Extract "2026"
+              if(txYear) uniqueYears.add(txYear); // Deteksi otomatis tahun dari riwayat dummy
+              
               let txMonthStr = t.tanggal.split(' ')[1]; // Extract "Jun"
               const monthMap = {'Jan':0, 'Feb':1, 'Mar':2, 'Apr':3, 'Mei':4, 'Jun':5, 'Jul':6, 'Ags':7, 'Sep':8, 'Okt':9, 'Nov':10, 'Des':11};
               let txMonth = monthMap[txMonthStr] || 0;
@@ -563,7 +567,8 @@
                 labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'],
                 dataIn: chartIn,
                 dataOut: chartOut
-              }
+              },
+              availableYears: Array.from(uniqueYears).sort((a,b) => b - a) // Kirim tahun yang tersedia
             });
         }
       }, 600); 
@@ -644,19 +649,8 @@
   async function loadDashboard() {
     showLoader();
     
-    // Cek dan Load Daftar Tahun ke Select (Hanya jika masih kosong)
     let selectEl = document.getElementById('filter-period');
-    if(selectEl && selectEl.options.length === 0) { 
-       const resTahun = await callAPI('getTahun');
-       if(resTahun.success && resTahun.data.length > 0) {
-         let opts = '';
-         resTahun.data.forEach(t => opts += `<option value="${t}" class="text-gray-800 dark:text-gray-100 dark:bg-gray-800">Tahun ${t}</option>`);
-         opts += `<option value="semua" class="text-gray-800 dark:text-gray-100 dark:bg-gray-800">Semua Waktu</option>`;
-         selectEl.innerHTML = opts;
-       }
-    }
-
-    let filterVal = selectEl ? selectEl.value : new Date().getFullYear().toString();
+    let filterVal = selectEl && selectEl.value ? selectEl.value : new Date().getFullYear().toString();
     
     // Ubah Judul Grafik (Tahun 2026, dll)
     let chartLabel = document.getElementById('chart-tahun-label');
@@ -664,6 +658,24 @@
 
     const res = await callAPI('getDashboardData', { filter: filterVal });
     hideLoader();
+
+    // Rebuild Dropdown secara otomatis dari deteksi Database
+    if(res.availableYears && selectEl) {
+       let currentSelection = selectEl.value || filterVal;
+       let opts = '';
+       res.availableYears.forEach(t => {
+          opts += `<option value="${t}" class="text-gray-800 dark:text-gray-100 dark:bg-gray-800">Tahun ${t}</option>`;
+       });
+       opts += `<option value="semua" class="text-gray-800 dark:text-gray-100 dark:bg-gray-800">Semua Waktu</option>`;
+       selectEl.innerHTML = opts;
+       
+       // Kembalikan ke opsi yang dipilih sebelumnya (jika valid)
+       if(res.availableYears.includes(currentSelection) || currentSelection === 'semua') {
+          selectEl.value = currentSelection;
+       } else {
+          selectEl.value = res.availableYears[0];
+       }
+    }
 
     document.getElementById('dash-saldo').innerText = formatRupiah(res.saldoTotal);
     document.getElementById('dash-in').innerText = formatRupiah(res.pemasukan);
