@@ -494,7 +494,7 @@
     {id: 'TX-3', tanggal: '05 Jan 2026', tipe: 'Pemasukan', nominal: 5000000, keterangan: 'Sumbangan Donatur'},
     {id: 'TX-4', tanggal: '20 Mar 2026', tipe: 'Pengeluaran', nominal: 750000, keterangan: 'Perbaikan Fasilitas'},
   ];
-  let dummyTahun = ['2026', '2025']; // Dummy array tahun
+  let dummyTahun = []; // Dikosongkan agar murni mendeteksi dari database transaksi
 
   async function callAPI(action, payload = {}) {
     try {
@@ -672,8 +672,10 @@
        // Kembalikan ke opsi yang dipilih sebelumnya (jika valid)
        if(res.availableYears.includes(currentSelection) || currentSelection === 'semua') {
           selectEl.value = currentSelection;
-       } else {
+       } else if (res.availableYears.length > 0) {
           selectEl.value = res.availableYears[0];
+       } else {
+          selectEl.value = 'semua';
        }
     }
 
