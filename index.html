@@ -214,37 +214,38 @@
 
     <!-- DASHBOARD PAGE -->
     <div id="view-dashboard" class="page">
-      <!-- PERBAIKAN: Menambahkan 'w-full max-w-6xl mx-auto' dan menghapus 'md:mx-10' agar lebar banner tidak melebar tak terbatas dan sejajar dengan kartu di bawahnya -->
-      <div class="bg-emerald-500 rounded-b-[2rem] md:rounded-3xl w-full max-w-6xl mx-auto md:mt-6 pb-14 shadow-md transition-all">
-        <div class="p-6 md:py-8 md:px-10 text-white">
-          <div class="flex justify-between items-center mb-6">
-            <div>
-              <h2 class="text-sm font-medium opacity-90 md:text-base text-emerald-50">Selamat Datang,</h2>
-              <h1 class="text-xl md:text-2xl font-bold">Admin Wali 9</h1>
-            </div>
-            <div class="flex space-x-3">
-              <!-- Tombol Tema (Quick Toggle) -->
-              <div onclick="toggleTheme()" class="w-10 h-10 md:w-12 md:h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm shadow-sm hover:bg-white/30 transition cursor-pointer">
-                <i id="header-theme-icon" class="fa-solid fa-moon md:text-lg"></i>
+      <!-- PERBAIKAN: Membungkus banner dengan max-w-6xl dan px yang SAMA PERSIS dengan Card -->
+      <div class="max-w-6xl mx-auto px-6 md:px-10">
+        <div class="bg-emerald-500 rounded-b-[2rem] md:rounded-3xl w-full md:mt-6 pb-14 shadow-md transition-all">
+          <div class="p-6 md:py-8 md:px-10 text-white">
+            <div class="flex justify-between items-center mb-6">
+              <div>
+                <h2 class="text-sm font-medium opacity-90 md:text-base text-emerald-50">Selamat Datang,</h2>
+                <h1 class="text-xl md:text-2xl font-bold">Admin Wali 9</h1>
               </div>
-              <!-- Ikon Notifikasi telah dihapus -->
+              <div class="flex space-x-3">
+                <!-- Tombol Tema (Quick Toggle) -->
+                <div onclick="toggleTheme()" class="w-10 h-10 md:w-12 md:h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm shadow-sm hover:bg-white/30 transition cursor-pointer">
+                  <i id="header-theme-icon" class="fa-solid fa-moon md:text-lg"></i>
+                </div>
+              </div>
             </div>
-          </div>
-          <div class="flex justify-between items-end">
-            <div>
-              <p class="text-sm opacity-90 mb-1 text-emerald-50">Total Saldo Kas</p>
-              <h1 class="text-4xl md:text-5xl font-bold tracking-tight" id="dash-saldo">Rp 0</h1>
+            <div class="flex justify-between items-end">
+              <div>
+                <p class="text-sm opacity-90 mb-1 text-emerald-50">Total Saldo Kas</p>
+                <h1 class="text-4xl md:text-5xl font-bold tracking-tight" id="dash-saldo">Rp 0</h1>
+              </div>
+              <!-- Dropdown Tahun -->
+              <select id="filter-period" onchange="loadDashboard()" class="bg-white/20 text-white text-xs md:text-sm rounded-lg px-2 py-1.5 md:px-3 md:py-2 backdrop-blur-sm border border-white/30 focus:outline-none cursor-pointer">
+                <!-- Injected via JS -->
+              </select>
             </div>
-            <select id="filter-period" onchange="loadDashboard()" class="bg-white/20 text-white text-xs md:text-sm rounded-lg px-2 py-1.5 md:px-3 md:py-2 backdrop-blur-sm border border-white/30 focus:outline-none cursor-pointer">
-              <option value="bulan_ini" class="text-gray-800 dark:text-gray-100 dark:bg-gray-800">Bulan Ini</option>
-              <option value="semua" class="text-gray-800 dark:text-gray-100 dark:bg-gray-800">Semua Waktu</option>
-            </select>
           </div>
         </div>
       </div>
 
       <div class="max-w-6xl mx-auto">
-        <!-- PERBAIKAN: Posisi Cards Summary (Pemasukan/Pengeluaran) menjadi 2 grid simetris di semua ukuran layar -->
+        <!-- Posisi Cards Summary (Pemasukan/Pengeluaran) -->
         <div class="px-6 md:px-10 -mt-10 relative z-10 grid grid-cols-2 gap-4 md:gap-8">
           <div class="bg-white dark:bg-gray-800 p-4 md:p-6 rounded-2xl shadow-md border border-gray-50 dark:border-gray-700 flex flex-col md:flex-row md:items-center space-y-3 md:space-y-0 md:space-x-4 hover:shadow-lg transition">
             <div class="w-10 h-10 md:w-14 md:h-14 rounded-full bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center text-emerald-500">
@@ -278,7 +279,7 @@
 
           <!-- Chart Card -->
           <div class="bg-white dark:bg-gray-800 p-5 md:p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition">
-             <h3 class="font-bold text-gray-800 dark:text-white mb-4 flex items-center"><i class="fa-solid fa-chart-line text-emerald-500 mr-2"></i> Arus Kas (7 Hari)</h3>
+             <h3 class="font-bold text-gray-800 dark:text-white mb-4 flex items-center"><i class="fa-solid fa-chart-line text-emerald-500 mr-2"></i> Arus Kas <span id="chart-tahun-label" class="ml-1 text-gray-500 font-medium"></span></h3>
              <div class="relative h-40 w-full">
                <canvas id="cashFlowChart"></canvas>
              </div>
@@ -367,6 +368,22 @@
       <div class="max-w-3xl mx-auto">
         <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-6">Pengaturan</h2>
         
+        <!-- Tambah Tahun Input -->
+        <div class="bg-white dark:bg-gray-800 p-6 md:p-8 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
+          <h3 class="font-bold text-gray-700 dark:text-gray-200 mb-4 border-b border-gray-100 dark:border-gray-700 pb-3 flex items-center">
+            <i class="fa-solid fa-calendar-plus mr-2 text-emerald-500"></i> Kelola Tahun Data
+          </h3>
+          <div class="space-y-4">
+            <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">Tambahkan tahun baru untuk keperluan input data dan memfilter laporan (contoh: 2026).</p>
+            <div class="flex space-x-3">
+              <input type="number" id="set-tahun-baru" placeholder="Contoh: 2026" class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500">
+              <button onclick="submitTambahTahun()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold px-6 py-3 rounded-xl transition shadow-sm">
+                Tambah
+              </button>
+            </div>
+          </div>
+        </div>
+
         <!-- Tema & Tampilan -->
         <div class="bg-white dark:bg-gray-800 p-6 md:p-8 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
           <h3 class="font-bold text-gray-700 dark:text-gray-200 mb-5 border-b border-gray-100 dark:border-gray-700 pb-3 flex items-center justify-between">
@@ -474,7 +491,10 @@
   let dummyStorage = [
     {id: 'TX-1', tanggal: '12 Jun 2026', tipe: 'Pemasukan', nominal: 2500000, keterangan: 'Saldo Awal Bulan'},
     {id: 'TX-2', tanggal: '13 Jun 2026', tipe: 'Pengeluaran', nominal: 150000, keterangan: 'Beli Kebutuhan ATK'},
+    {id: 'TX-3', tanggal: '05 Jan 2026', tipe: 'Pemasukan', nominal: 5000000, keterangan: 'Sumbangan Donatur'},
+    {id: 'TX-4', tanggal: '20 Mar 2026', tipe: 'Pengeluaran', nominal: 750000, keterangan: 'Perbaikan Fasilitas'},
   ];
+  let dummyTahun = ['2026', '2025']; // Dummy array tahun
 
   async function callAPI(action, payload = {}) {
     try {
@@ -500,25 +520,49 @@
         }
         if(action === 'getRekapData') resolve(dummyStorage);
         if(action === 'ubahPassword') resolve({success: true, message: 'Password Dummy berhasil diubah!'});
+        
+        // Mock Response Tahun
+        if(action === 'getTahun') resolve({success: true, data: dummyTahun});
+        if(action === 'tambahTahun') {
+            if(!dummyTahun.includes(payload.tahun)) dummyTahun.unshift(payload.tahun);
+            resolve({success: true, message: 'Tahun Dummy berhasil ditambahkan!'});
+        }
+
         if(action === 'getDashboardData') {
             let masuk = 0, keluar = 0;
             let historyLimit = dummyStorage.slice(0, 5); 
-            dummyStorage.forEach(t => { if(t.tipe === 'Pemasukan') masuk += t.nominal; else keluar += t.nominal; });
             
-            let isBulanIni = (payload && payload.filter === 'bulan_ini');
+            let targetYear = payload && payload.filter ? payload.filter : dummyTahun[0];
+            let chartIn = [0,0,0,0,0,0,0,0,0,0,0,0];
+            let chartOut = [0,0,0,0,0,0,0,0,0,0,0,0];
+
+            dummyStorage.forEach(t => { 
+              let txYear = t.tanggal.split(' ')[2]; // Extract "2026"
+              let txMonthStr = t.tanggal.split(' ')[1]; // Extract "Jun"
+              const monthMap = {'Jan':0, 'Feb':1, 'Mar':2, 'Apr':3, 'Mei':4, 'Jun':5, 'Jul':6, 'Ags':7, 'Sep':8, 'Okt':9, 'Nov':10, 'Des':11};
+              let txMonth = monthMap[txMonthStr] || 0;
+
+              if(t.tipe === 'Pemasukan') masuk += t.nominal; else keluar += t.nominal; 
+
+              if(targetYear === 'semua' || txYear === targetYear) {
+                 if(t.tipe === 'Pemasukan') chartIn[txMonth] += t.nominal;
+                 else chartOut[txMonth] += t.nominal;
+              }
+            });
+            
             resolve({ 
               saldoTotal: masuk - keluar, 
-              pemasukan: isBulanIni ? masuk : masuk + 1500000, 
-              pengeluaran: isBulanIni ? keluar : keluar + 500000, 
+              pemasukan: targetYear === 'semua' ? masuk : masuk * 0.7, 
+              pengeluaran: targetYear === 'semua' ? keluar : keluar * 0.4, 
               history: historyLimit,
               insights: [
-                "Pengeluaran terbesar: Beli Kebutuhan ATK (Rp 150.000)",
-                `Rasio saldo tersisa: ${isBulanIni ? '94' : '85'}% dari pemasukan.`
+                "Pengeluaran terbesar: Perbaikan Fasilitas (Rp 750.000)",
+                "Rasio saldo tersisa: 85% dari pemasukan."
               ],
               chart: {
-                labels: ['H-6', 'H-5', 'H-4', 'H-3', 'H-2', 'H-1', 'Hari Ini'],
-                dataIn: [0, 500000, 0, 0, 0, 2500000, 0],
-                dataOut: [0, 0, 100000, 0, 0, 0, 150000]
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'],
+                dataIn: chartIn,
+                dataOut: chartOut
               }
             });
         }
@@ -599,8 +643,25 @@
 
   async function loadDashboard() {
     showLoader();
-    let filterVal = document.getElementById('filter-period') ? document.getElementById('filter-period').value : 'bulan_ini';
     
+    // Cek dan Load Daftar Tahun ke Select (Hanya jika masih kosong)
+    let selectEl = document.getElementById('filter-period');
+    if(selectEl && selectEl.options.length === 0) { 
+       const resTahun = await callAPI('getTahun');
+       if(resTahun.success && resTahun.data.length > 0) {
+         let opts = '';
+         resTahun.data.forEach(t => opts += `<option value="${t}" class="text-gray-800 dark:text-gray-100 dark:bg-gray-800">Tahun ${t}</option>`);
+         opts += `<option value="semua" class="text-gray-800 dark:text-gray-100 dark:bg-gray-800">Semua Waktu</option>`;
+         selectEl.innerHTML = opts;
+       }
+    }
+
+    let filterVal = selectEl ? selectEl.value : new Date().getFullYear().toString();
+    
+    // Ubah Judul Grafik (Tahun 2026, dll)
+    let chartLabel = document.getElementById('chart-tahun-label');
+    if(chartLabel) chartLabel.innerText = filterVal === 'semua' ? '(Semua Waktu)' : `(${filterVal})`;
+
     const res = await callAPI('getDashboardData', { filter: filterVal });
     hideLoader();
 
@@ -712,6 +773,26 @@
       Swal.fire({ title: 'Berhasil', text: res.message, icon: 'success', background: isDarkMode ? '#1f2937' : '#fff', color: isDarkMode ? '#fff' : '#545454' });
       document.getElementById('set-pass-lama').value = '';
       document.getElementById('set-pass-baru').value = '';
+    } else {
+      Swal.fire({ title: 'Gagal', text: res.message, icon: 'error', background: isDarkMode ? '#1f2937' : '#fff', color: isDarkMode ? '#fff' : '#545454' });
+    }
+  }
+
+  async function submitTambahTahun() {
+    const tahunBaru = document.getElementById('set-tahun-baru').value;
+    
+    if(!tahunBaru || tahunBaru.length !== 4) return Swal.fire({ title: 'Info', text: 'Masukkan 4 digit tahun valid (contoh: 2026)', icon: 'warning', background: isDarkMode ? '#1f2937' : '#fff', color: isDarkMode ? '#fff' : '#545454' });
+
+    showLoader();
+    const res = await callAPI('tambahTahun', { tahun: tahunBaru });
+    hideLoader();
+
+    if(res.success) {
+      Swal.fire({ title: 'Berhasil', text: res.message, icon: 'success', background: isDarkMode ? '#1f2937' : '#fff', color: isDarkMode ? '#fff' : '#545454' });
+      document.getElementById('set-tahun-baru').value = '';
+      
+      // Kosongkan dropdown dashboard agar load ulang daftar tahun saat masuk ke menu Home
+      document.getElementById('filter-period').innerHTML = ''; 
     } else {
       Swal.fire({ title: 'Gagal', text: res.message, icon: 'error', background: isDarkMode ? '#1f2937' : '#fff', color: isDarkMode ? '#fff' : '#545454' });
     }
