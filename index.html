@@ -135,6 +135,7 @@
     #loader {
       display: none;
       position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(255,255,255,0.85);
       backdrop-filter: blur(5px);
       z-index: 9999;
       justify-content: center;
@@ -149,19 +150,68 @@
       animation: spin 1s linear infinite;
     }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    /* --- SWEETALERT2 CUSTOM PROPORTIONAL SIZING --- */
+    .swal2-popup {
+      width: 280px !important;
+      padding: 1.25rem 1rem !important;
+      border-radius: 1.5rem !important;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+    }
+    @media (min-width: 768px) {
+      .swal2-popup { width: 340px !important; }
+    }
+    .swal2-icon {
+      transform: scale(0.65) !important; /* Mengecilkan ikon bawaan yang terlalu besar */
+      margin: 0.5rem auto 0 auto !important;
+    }
+    .swal2-title {
+      font-size: 1.125rem !important; /* text-lg */
+      margin-bottom: 0.25rem !important;
+      padding: 0 !important;
+    }
+    .swal2-html-container {
+      font-size: 0.875rem !important; /* text-sm */
+      margin: 0 !important;
+    }
+    .swal2-actions {
+      margin-top: 1.25rem !important;
+    }
+    .swal2-confirm {
+      padding: 0.5rem 1.5rem !important;
+      font-size: 0.875rem !important;
+      font-weight: 600 !important;
+      border-radius: 0.75rem !important; /* rounded-xl */
+    }
+    
+    /* Dark Mode Override Khusus SweetAlert */
+    html.dark .swal2-popup {
+      background-color: #1f2937 !important; /* gray-800 */
+      color: #f9fafb !important; /* gray-50 */
+      border: 1px solid #374151 !important; /* border-gray-700 */
+    }
+    html.dark .swal2-title, html.dark .swal2-html-container {
+      color: #e5e7eb !important; /* gray-200 */
+    }
+
+    /* PERBAIKAN: Memastikan Modal selalu di atas Loader */
+    .swal2-container {
+      z-index: 10000 !important;
+    }
   </style>
 </head>
-<body class="antialiased bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-100">
+<body class="antialiased text-gray-800">
 
-<div class="app-container bg-gray-50 dark:bg-gray-900">
+<div class="app-container">
   
-  <div id="loader" class="bg-white/80 dark:bg-gray-900/80">
-    <div class="spinner mb-3 dark:border-gray-700 dark:border-top-emerald-500"></div>
+  <!-- Loader overlay -->
+  <div id="loader">
+    <div class="spinner mb-3"></div>
     <p class="text-sm text-gray-600 dark:text-gray-300 font-medium tracking-wide">Memproses...</p>
   </div>
 
-  <!-- NAVIGATION BAR -->
-  <nav id="bottom-nav" class="bottom-nav glass bg-white/95 border-t border-gray-100 dark:bg-gray-900/95 dark:border-t-gray-800 md:border-t-0 md:border-b md:border-gray-200 md:dark:border-gray-800 hidden">
+  <!-- NAVIGATION BAR (BOTTOM ON MOBILE, TOP ON DESKTOP) -->
+  <nav id="bottom-nav" class="bottom-nav glass hidden">
     <!-- Desktop Brand Logo -->
     <div class="hidden md:flex items-center mr-auto cursor-pointer">
        <div class="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center text-white text-sm shadow-sm mr-3">
@@ -172,19 +222,19 @@
        </div>
     </div>
 
-    <button onclick="navTo('dashboard')" class="nav-item active text-gray-400 dark:text-gray-500 dark:hover:bg-gray-800 md:active:bg-emerald-50 md:dark:active:bg-emerald-500/10" id="nav-dashboard">
+    <button onclick="navTo('dashboard')" class="nav-item active text-gray-400" id="nav-dashboard">
       <i class="fa-solid fa-house text-xl mb-1"></i>
       <span class="text-[10px] font-semibold tracking-wide">Home</span>
     </button>
-    <button onclick="navTo('input')" class="nav-item text-gray-400 dark:text-gray-500 dark:hover:bg-gray-800 md:active:bg-emerald-50 md:dark:active:bg-emerald-500/10" id="nav-input">
+    <button onclick="navTo('input')" class="nav-item text-gray-400" id="nav-input">
       <i class="fa-solid fa-circle-plus text-xl mb-1"></i>
       <span class="text-[10px] font-semibold tracking-wide">Input</span>
     </button>
-    <button onclick="navTo('rekap')" class="nav-item text-gray-400 dark:text-gray-500 dark:hover:bg-gray-800 md:active:bg-emerald-50 md:dark:active:bg-emerald-500/10" id="nav-rekap">
+    <button onclick="navTo('rekap')" class="nav-item text-gray-400" id="nav-rekap">
       <i class="fa-solid fa-file-lines text-xl mb-1"></i>
       <span class="text-[10px] font-semibold tracking-wide">Rekap</span>
     </button>
-    <button onclick="navTo('setting')" class="nav-item text-gray-400 dark:text-gray-500 dark:hover:bg-gray-800 md:active:bg-emerald-50 md:dark:active:bg-emerald-500/10" id="nav-setting">
+    <button onclick="navTo('setting')" class="nav-item text-gray-400" id="nav-setting">
       <i class="fa-solid fa-gear text-xl mb-1"></i>
       <span class="text-[10px] font-semibold tracking-wide">Setting</span>
     </button>
@@ -193,8 +243,8 @@
   <div class="w-full">
     
     <!-- LOGIN PAGE -->
-    <div id="view-login" class="page active relative z-[100]">
-      <div class="flex flex-col items-center justify-center px-6 h-screen w-full">
+    <div id="view-login" class="page active relative z-[100] bg-gray-50 dark:bg-gray-900 !pb-0">
+      <div class="flex flex-col items-center justify-center px-6 min-h-screen w-full">
         <div class="w-16 h-16 bg-emerald-500 rounded-2xl flex items-center justify-center text-white text-3xl shadow-lg mb-6">
           <i class="fa-solid fa-mosque"></i>
         </div>
@@ -203,7 +253,14 @@
         
         <div class="w-full max-w-sm bg-white dark:bg-gray-800 p-6 md:p-8 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700">
           <h2 class="text-lg font-semibold mb-4 text-center text-gray-800 dark:text-white">Masuk Akun</h2>
-          <input type="password" id="login-pass" placeholder="Masukkan Password" class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 mb-4 transition" onkeypress="if(event.key === 'Enter') doLogin()">
+          
+          <div class="relative mb-4">
+            <input type="password" id="login-pass" placeholder="Masukkan Password" class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 transition pr-12" onkeypress="if(event.key === 'Enter') doLogin()">
+            <button type="button" onclick="togglePassword('login-pass', 'login-eye')" class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-emerald-500 transition">
+              <i id="login-eye" class="fa-solid fa-eye-slash"></i>
+            </button>
+          </div>
+
           <button onclick="doLogin()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-3 rounded-xl transition shadow-md hover:shadow-lg">
             Masuk <i class="fa-solid fa-arrow-right ml-2"></i>
           </button>
@@ -408,11 +465,21 @@
           <div class="space-y-4 md:space-y-5">
             <div>
               <label class="block text-xs md:text-sm font-semibold text-gray-500 dark:text-gray-400 mb-1.5">Password Lama</label>
-              <input type="password" id="set-pass-lama" class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500">
+              <div class="relative">
+                <input type="password" id="set-pass-lama" class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 pr-12">
+                <button type="button" onclick="togglePassword('set-pass-lama', 'lama-eye')" class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-emerald-500 transition">
+                  <i id="lama-eye" class="fa-solid fa-eye-slash"></i>
+                </button>
+              </div>
             </div>
             <div>
               <label class="block text-xs md:text-sm font-semibold text-gray-500 dark:text-gray-400 mb-1.5">Password Baru</label>
-              <input type="password" id="set-pass-baru" class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500">
+              <div class="relative">
+                <input type="password" id="set-pass-baru" class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 pr-12">
+                <button type="button" onclick="togglePassword('set-pass-baru', 'baru-eye')" class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-emerald-500 transition">
+                  <i id="baru-eye" class="fa-solid fa-eye-slash"></i>
+                </button>
+              </div>
             </div>
             <button onclick="submitUbahPassword()" class="w-full bg-gray-800 dark:bg-gray-700 text-white font-semibold py-3 rounded-xl mt-4 hover:bg-gray-700 dark:hover:bg-gray-600 transition">
               Update Password
@@ -571,8 +638,23 @@
               availableYears: Array.from(uniqueYears).sort((a,b) => b - a) // Kirim tahun yang tersedia
             });
         }
-      }, 600); 
+      }, 300); // PERBAIKAN: Mempercepat proses loading Dummy dari 600ms ke 300ms
     });
+  }
+
+  // --- PASSWORD TOGGLE LOGIC ---
+  function togglePassword(inputId, iconId) {
+    const input = document.getElementById(inputId);
+    const icon = document.getElementById(iconId);
+    if (input.type === 'password') {
+      input.type = 'text';
+      icon.classList.remove('fa-eye-slash');
+      icon.classList.add('fa-eye');
+    } else {
+      input.type = 'password';
+      icon.classList.remove('fa-eye');
+      icon.classList.add('fa-eye-slash');
+    }
   }
 
   // --- CHART LOGIC ---
@@ -624,7 +706,7 @@
 
   async function doLogin() {
     const pass = document.getElementById('login-pass').value;
-    if(!pass) return Swal.fire('Oops', 'Masukkan password!', 'warning');
+    if(!pass) return Swal.fire({ title: 'Oops', text: 'Masukkan password!', icon: 'warning' });
 
     showLoader();
     const res = await callAPI('cekLogin', { password: pass });
@@ -633,9 +715,9 @@
     if(res.success) {
       document.getElementById('bottom-nav').classList.remove('hidden');
       navTo('dashboard');
-      Swal.fire({ title: 'Berhasil', text: 'Selamat Datang!', icon: 'success', timer: 1500, showConfirmButton: false, background: isDarkMode ? '#1f2937' : '#fff', color: isDarkMode ? '#fff' : '#545454' });
+      Swal.fire({ title: 'Berhasil', text: 'Selamat Datang!', icon: 'success', timer: 1500, showConfirmButton: false });
     } else {
-      Swal.fire({ title: 'Gagal', text: res.message, icon: 'error', background: isDarkMode ? '#1f2937' : '#fff', color: isDarkMode ? '#fff' : '#545454' });
+      Swal.fire({ title: 'Gagal', text: res.message, icon: 'error' });
     }
   }
 
@@ -726,7 +808,7 @@
     };
 
     if(!payload.tanggal || !payload.nominal || !payload.keterangan) {
-      return Swal.fire({ title: 'Peringatan', text: 'Lengkapi semua field', icon: 'warning', background: isDarkMode ? '#1f2937' : '#fff', color: isDarkMode ? '#fff' : '#545454' });
+      return Swal.fire({ title: 'Peringatan', text: 'Lengkapi semua field', icon: 'warning' });
     }
 
     showLoader();
@@ -734,11 +816,11 @@
     hideLoader();
 
     if(res.success) {
-      Swal.fire({ title: 'Berhasil', text: res.message, icon: 'success', background: isDarkMode ? '#1f2937' : '#fff', color: isDarkMode ? '#fff' : '#545454' });
+      Swal.fire({ title: 'Berhasil', text: res.message, icon: 'success' });
       document.getElementById('form-input').reset();
       document.getElementById('input-tanggal').valueAsDate = new Date();
     } else {
-      Swal.fire({ title: 'Gagal', text: res.message, icon: 'error', background: isDarkMode ? '#1f2937' : '#fff', color: isDarkMode ? '#fff' : '#545454' });
+      Swal.fire({ title: 'Gagal', text: res.message, icon: 'error' });
     }
   }
 
@@ -777,38 +859,38 @@
     const lama = document.getElementById('set-pass-lama').value;
     const baru = document.getElementById('set-pass-baru').value;
     
-    if(!lama || !baru) return Swal.fire({ title: 'Info', text: 'Isi password lama dan baru', icon: 'warning', background: isDarkMode ? '#1f2937' : '#fff', color: isDarkMode ? '#fff' : '#545454' });
+    if(!lama || !baru) return Swal.fire({ title: 'Info', text: 'Isi password lama dan baru', icon: 'warning' });
 
     showLoader();
     const res = await callAPI('ubahPassword', { passLama: lama, passBaru: baru });
     hideLoader();
 
     if(res.success) {
-      Swal.fire({ title: 'Berhasil', text: res.message, icon: 'success', background: isDarkMode ? '#1f2937' : '#fff', color: isDarkMode ? '#fff' : '#545454' });
+      Swal.fire({ title: 'Berhasil', text: res.message, icon: 'success' });
       document.getElementById('set-pass-lama').value = '';
       document.getElementById('set-pass-baru').value = '';
     } else {
-      Swal.fire({ title: 'Gagal', text: res.message, icon: 'error', background: isDarkMode ? '#1f2937' : '#fff', color: isDarkMode ? '#fff' : '#545454' });
+      Swal.fire({ title: 'Gagal', text: res.message, icon: 'error' });
     }
   }
 
   async function submitTambahTahun() {
     const tahunBaru = document.getElementById('set-tahun-baru').value;
     
-    if(!tahunBaru || tahunBaru.length !== 4) return Swal.fire({ title: 'Info', text: 'Masukkan 4 digit tahun valid (contoh: 2026)', icon: 'warning', background: isDarkMode ? '#1f2937' : '#fff', color: isDarkMode ? '#fff' : '#545454' });
+    if(!tahunBaru || tahunBaru.length !== 4) return Swal.fire({ title: 'Info', text: 'Masukkan 4 digit tahun valid (contoh: 2026)', icon: 'warning' });
 
     showLoader();
     const res = await callAPI('tambahTahun', { tahun: tahunBaru });
     hideLoader();
 
     if(res.success) {
-      Swal.fire({ title: 'Berhasil', text: res.message, icon: 'success', background: isDarkMode ? '#1f2937' : '#fff', color: isDarkMode ? '#fff' : '#545454' });
+      Swal.fire({ title: 'Berhasil', text: res.message, icon: 'success' });
       document.getElementById('set-tahun-baru').value = '';
       
       // Kosongkan dropdown dashboard agar load ulang daftar tahun saat masuk ke menu Home
       document.getElementById('filter-period').innerHTML = ''; 
     } else {
-      Swal.fire({ title: 'Gagal', text: res.message, icon: 'error', background: isDarkMode ? '#1f2937' : '#fff', color: isDarkMode ? '#fff' : '#545454' });
+      Swal.fire({ title: 'Gagal', text: res.message, icon: 'error' });
     }
   }
 
