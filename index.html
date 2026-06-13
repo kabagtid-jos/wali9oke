@@ -4,6 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Kas Wali 9 P2S Abu Zairi</title>
+  <meta name="theme-color" content="#0f172a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Kas Wali 9">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/svg+xml" href="pwa-icon.svg">
   
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -976,6 +982,103 @@
       }
     }
 
+
+    /* ==============================================================
+       FITUR LANJUTAN: aksi transaksi, laporan publik, PWA, struk mini
+       ============================================================== */
+    .mini-action-btn {
+      width: 2rem;
+      height: 2rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      transition: all 0.2s ease;
+      border: 1px solid rgba(226, 232, 240, 0.8);
+    }
+
+    .mini-action-btn:hover { transform: translateY(-1px); }
+
+    .receipt-card {
+      width: 100%;
+      max-width: 360px;
+      margin: 0 auto;
+      background: #ffffff;
+      color: #0f172a;
+      border-radius: 1.25rem;
+      border: 1px solid #e5e7eb;
+      overflow: hidden;
+      text-align: left;
+    }
+
+    html.dark .receipt-card {
+      background: #111827;
+      color: #f9fafb;
+      border-color: #374151;
+    }
+
+    .receipt-header {
+      padding: 1rem;
+      background: linear-gradient(135deg, #0f172a, #047857);
+      color: #ffffff;
+    }
+
+    .receipt-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.65rem 1rem;
+      border-bottom: 1px dashed #e5e7eb;
+      font-size: 0.82rem;
+    }
+
+    html.dark .receipt-row { border-bottom-color: #374151; }
+    .receipt-row span:first-child { color: #64748b; }
+    html.dark .receipt-row span:first-child { color: #94a3b8; }
+    .receipt-row span:last-child { font-weight: 700; text-align: right; }
+
+    .public-report-card {
+      background: rgba(255,255,255,0.9);
+      border: 1px solid rgba(226, 232, 240, 0.88);
+      box-shadow: 0 22px 55px rgba(15, 23, 42, 0.08);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    html.dark .public-report-card {
+      background: rgba(15,23,42,0.82);
+      border-color: rgba(51,65,85,0.9);
+    }
+
+    .offline-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      border-radius: 999px;
+      padding: 0.35rem 0.7rem;
+      font-size: 0.72rem;
+      font-weight: 800;
+      background: #fff7ed;
+      color: #ea580c;
+      border: 1px solid #fed7aa;
+    }
+
+    html.dark .offline-badge {
+      background: rgba(234, 88, 12, 0.12);
+      color: #fdba74;
+      border-color: rgba(251, 146, 60, 0.22);
+    }
+
+    .swal-wide-form {
+      width: min(94vw, 520px) !important;
+      max-width: 520px !important;
+    }
+
+    @media (max-width: 767px) {
+      .mini-action-btn { width: 1.85rem; height: 1.85rem; }
+      #rekap-list td { font-size: 0.78rem; }
+    }
+
   </style>
 </head>
 <body class="antialiased text-gray-800 bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
@@ -1038,6 +1141,60 @@
           <button onclick="doLogin()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-3 rounded-xl transition shadow-md hover:shadow-lg">
             Masuk <i class="fa-solid fa-arrow-right ml-2"></i>
           </button>
+        </div>
+      </div>
+    </div>
+
+
+
+    <div id="view-public" class="page px-5 md:px-10 pt-8 md:pt-10">
+      <div class="max-w-5xl mx-auto">
+        <div class="public-report-card rounded-3xl p-5 md:p-8 mb-6">
+          <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+              <p class="text-xs font-bold uppercase tracking-[0.22em] text-emerald-500 mb-2">Laporan Publik Read-only</p>
+              <h1 class="text-2xl md:text-3xl font-black text-gray-900 dark:text-white tracking-tight">Kas Wali 9 P2S Abu Zairi</h1>
+              <p id="public-updated" class="text-sm text-gray-500 dark:text-gray-400 mt-1">Memuat data laporan...</p>
+            </div>
+            <button onclick="copyPublicReportLink()" class="inline-flex items-center justify-center gap-2 bg-slate-900 dark:bg-emerald-600 text-white px-4 py-3 rounded-2xl font-bold text-sm shadow-lg hover:brightness-110 transition">
+              <i class="fa-solid fa-link"></i> Salin Link Laporan
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <div class="public-report-card rounded-3xl p-5">
+            <p class="text-xs uppercase tracking-wide font-bold text-gray-500 dark:text-gray-400">Saldo Akhir</p>
+            <h2 id="public-saldo" class="text-2xl font-black text-gray-900 dark:text-white mt-2">Rp 0</h2>
+          </div>
+          <div class="public-report-card rounded-3xl p-5">
+            <p class="text-xs uppercase tracking-wide font-bold text-gray-500 dark:text-gray-400">Total Pemasukan</p>
+            <h2 id="public-in" class="text-2xl font-black text-emerald-500 mt-2">Rp 0</h2>
+          </div>
+          <div class="public-report-card rounded-3xl p-5">
+            <p class="text-xs uppercase tracking-wide font-bold text-gray-500 dark:text-gray-400">Total Pengeluaran</p>
+            <h2 id="public-out" class="text-2xl font-black text-red-500 mt-2">Rp 0</h2>
+          </div>
+        </div>
+
+        <div class="public-report-card rounded-3xl overflow-hidden">
+          <div class="p-5 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between gap-3">
+            <h3 class="font-black text-gray-900 dark:text-white">Mutasi Terbaru</h3>
+            <span class="text-xs text-gray-500 dark:text-gray-400">Mode lihat saja</span>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm text-gray-600 dark:text-gray-300">
+              <thead class="bg-slate-900 text-white uppercase text-xs">
+                <tr>
+                  <th class="px-5 py-4 whitespace-nowrap">Tanggal</th>
+                  <th class="px-5 py-4 min-w-[220px]">Keterangan</th>
+                  <th class="px-5 py-4 text-center">Tipe</th>
+                  <th class="px-5 py-4 text-right whitespace-nowrap">Nominal</th>
+                </tr>
+              </thead>
+              <tbody id="public-list" class="divide-y divide-gray-100 dark:divide-gray-800"></tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
@@ -1188,6 +1345,10 @@
         <!-- Filter & Aksi Export -->
         <div class="bg-white dark:bg-gray-800 p-4 md:p-5 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 mb-6 flex flex-col md:flex-row gap-4 justify-between items-center">
           <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+            <div class="relative w-full sm:w-64">
+              <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+              <input id="search-rekap" type="search" oninput="filterRekap()" placeholder="Cari transaksi..." class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-white rounded-xl pl-10 pr-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+            </div>
             <select id="filter-rekap-bulan" onchange="filterRekap()" class="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-white rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-500">
               <option value="semua">Semua Bulan</option>
               <option value="01">Januari</option>
@@ -1213,7 +1374,7 @@
               <i class="fa-solid fa-file-excel mr-1"></i> Excel
             </button>
             <button onclick="exportPDF()" class="flex-1 md:flex-none bg-red-50 dark:bg-red-500/10 text-red-600 hover:bg-red-100 dark:hover:bg-red-500/20 transition px-4 py-2.5 rounded-xl font-semibold text-sm whitespace-nowrap">
-              <i class="fa-solid fa-file-pdf mr-1"></i> PDF
+              <i class="fa-solid fa-file-pdf mr-1"></i> PDF Resmi
             </button>
             <button onclick="loadRekap()" class="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition px-4 py-2.5 rounded-xl font-semibold text-sm">
               <i class="fa-solid fa-rotate-right"></i>
@@ -1232,6 +1393,7 @@
                   <th class="px-5 py-4 text-center">Tipe</th>
                   <th class="px-5 py-4 text-right whitespace-nowrap">Nominal</th>
                   <th class="px-5 py-4 text-center">Bukti</th>
+                  <th class="px-5 py-4 text-center">Aksi</th>
                 </tr>
               </thead>
               <tbody id="rekap-list" class="divide-y divide-gray-100 dark:divide-gray-800">
@@ -1293,6 +1455,43 @@
           </div>
         </div>
 
+
+
+        <div class="bg-white dark:bg-gray-800 p-6 md:p-8 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
+          <h3 class="font-bold text-gray-700 dark:text-gray-200 mb-5 border-b border-gray-100 dark:border-gray-700 pb-3 flex items-center">
+            <i class="fa-solid fa-mobile-screen-button mr-2 text-emerald-500"></i> Aplikasi & Laporan Publik
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <button id="install-app-btn" onclick="installApp()" class="bg-slate-900 dark:bg-emerald-600 text-white font-bold px-4 py-3 rounded-2xl shadow-sm hover:brightness-110 transition disabled:opacity-50 disabled:cursor-not-allowed">
+              <i class="fa-solid fa-download mr-2"></i> Install ke Layar Utama
+            </button>
+            <button onclick="copyPublicReportLink()" class="bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-300 font-bold px-4 py-3 rounded-2xl hover:bg-blue-100 dark:hover:bg-blue-500/20 transition">
+              <i class="fa-solid fa-link mr-2"></i> Salin Link Laporan
+            </button>
+          </div>
+          <p class="text-xs text-gray-500 dark:text-gray-400 mt-4 leading-relaxed">
+            Link laporan publik bersifat read-only. Data yang tampil hanya ringkasan dan mutasi terbaru tanpa tombol edit/hapus.
+          </p>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 p-6 md:p-8 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
+          <h3 class="font-bold text-gray-700 dark:text-gray-200 mb-5 border-b border-gray-100 dark:border-gray-700 pb-3 flex items-center justify-between gap-3">
+            <span><i class="fa-solid fa-wifi mr-2 text-emerald-500"></i> Mode Offline Sementara</span>
+            <span id="offline-queue-badge" class="offline-badge"><i class="fa-solid fa-clock"></i> 0 antrean</span>
+          </h3>
+          <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed mb-4">
+            Jika koneksi terputus saat menyimpan transaksi, data akan masuk antrean lokal di perangkat ini dan bisa disinkronkan saat internet kembali aktif.
+          </p>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <button onclick="syncOfflineQueue()" class="bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-300 font-bold px-4 py-3 rounded-2xl hover:bg-emerald-100 dark:hover:bg-emerald-500/20 transition">
+              <i class="fa-solid fa-rotate mr-2"></i> Sinkronkan Antrean
+            </button>
+            <button onclick="clearOfflineQueue()" class="bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-300 font-bold px-4 py-3 rounded-2xl hover:bg-red-100 dark:hover:bg-red-500/20 transition">
+              <i class="fa-solid fa-trash mr-2"></i> Kosongkan Antrean
+            </button>
+          </div>
+        </div>
+
         <div class="bg-red-50 dark:bg-red-500/10 p-6 rounded-3xl border border-red-100 dark:border-red-500/20 text-center hover:bg-red-100 dark:hover:bg-red-500/30 transition cursor-pointer" onclick="logout()">
           <button class="text-red-500 font-bold w-full py-2 flex items-center justify-center text-lg">
             <i class="fa-solid fa-sign-out-alt mr-2"></i> Keluar Aplikasi
@@ -1301,7 +1500,7 @@
         
         <div class="text-center mt-10 opacity-50 pb-8">
           <p class="text-xs md:text-sm font-medium dark:text-white">Aplikasi Wali 9 P2S Abu Zairi</p>
-          <p class="text-[10px] md:text-xs dark:text-gray-300">Versi 1.8 • Premium Banking UI</p>
+          <p class="text-[10px] md:text-xs dark:text-gray-300">Versi 2.0 • Audit, Offline & PWA</p>
         </div>
       </div>
     </div>
@@ -1314,9 +1513,122 @@
   const API_URL = "https://script.google.com/macros/s/AKfycbwIQ_jy1OPTTrrwQvA9nyT7-AylRfBm7Rh154wdP7Z77mzdMCOesHJzz97NZksyupPh/exec";
   const IMGBB_API_KEY = "d9e6199d92abbae9ddea7cbca2361bc3"; 
 
-  const formatRupiah = (angka) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
+  const formatRupiah = (angka) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(Number(angka) || 0);
   const showLoader = () => document.getElementById('loader').style.display = 'flex';
   const hideLoader = () => document.getElementById('loader').style.display = 'none';
+
+  const APP_VERSION = '2.0.0';
+  const AUTO_LOGOUT_MINUTES = 15;
+  const OFFLINE_QUEUE_KEY = 'wali9_offline_queue_v2';
+  const MONTHS_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
+  const MONTHS_FULL = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+  let autoLogoutTimer = null;
+  let deferredInstallPrompt = null;
+
+  function escapeHTML(value) {
+    return String(value ?? '').replace(/[&<>'"]/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[char]));
+  }
+
+  function sanitizeURL(value) {
+    const url = String(value || '').trim();
+    if (!url) return '';
+    try {
+      const parsed = new URL(url, window.location.href);
+      return ['http:', 'https:', 'blob:'].includes(parsed.protocol) ? parsed.href : '';
+    } catch (err) {
+      return '';
+    }
+  }
+
+  function formatInputDateToDisplay(value) {
+    if (!value) return '';
+    const [year, month, day] = value.split('-').map(Number);
+    if (!year || !month || !day) return value;
+    return `${String(day).padStart(2, '0')} ${MONTHS_SHORT[month - 1]} ${year}`;
+  }
+
+  function displayDateToInput(value) {
+    if (!value) return '';
+    if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
+    const parts = String(value).split(' ');
+    if (parts.length !== 3) return '';
+    const monthIndex = MONTHS_SHORT.findIndex(m => m.toLowerCase() === parts[1].toLowerCase());
+    if (monthIndex < 0) return '';
+    return `${parts[2]}-${String(monthIndex + 1).padStart(2, '0')}-${String(parseInt(parts[0], 10)).padStart(2, '0')}`;
+  }
+
+  function getSelectedPeriodText() {
+    const bulan = document.getElementById('filter-rekap-bulan')?.value || 'semua';
+    const tahun = document.getElementById('filter-rekap-tahun')?.value || 'semua';
+    const bulanText = bulan === 'semua' ? 'Semua Bulan' : MONTHS_FULL[parseInt(bulan, 10) - 1];
+    const tahunText = tahun === 'semua' ? 'Semua Tahun' : tahun;
+    return `${bulanText} ${tahunText}`.trim();
+  }
+
+  function getPublicReportLink() {
+    return `${window.location.origin}${window.location.pathname}?public=1`;
+  }
+
+  async function copyTextToClipboard(text) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch (err) {
+      const input = document.createElement('textarea');
+      input.value = text;
+      input.setAttribute('readonly', '');
+      input.style.position = 'fixed';
+      input.style.opacity = '0';
+      document.body.appendChild(input);
+      input.select();
+      const ok = document.execCommand('copy');
+      input.remove();
+      return ok;
+    }
+  }
+
+  async function copyPublicReportLink() {
+    const link = getPublicReportLink();
+    const ok = await copyTextToClipboard(link);
+    Swal.fire({
+      title: ok ? 'Link Disalin' : 'Salin Manual',
+      text: ok ? 'Link laporan publik read-only sudah disalin.' : link,
+      icon: ok ? 'success' : 'info'
+    });
+  }
+
+  function isPublicMode() {
+    return new URLSearchParams(window.location.search).get('public') === '1' || window.location.hash === '#public';
+  }
+
+  function getTxIdentity(tx) {
+    return tx?.id || tx?.ID || tx?.rowId || tx?.rowID || tx?.rowIndex || tx?.row || tx?.Row || tx?.nomor || tx?.No || tx?.no || '';
+  }
+
+  function buildTxReference(tx) {
+    return {
+      id: getTxIdentity(tx),
+      tanggal: tx?.tanggal || '',
+      tipe: tx?.tipe || '',
+      nominal: Number(tx?.nominal) || 0,
+      keterangan: tx?.keterangan || '',
+      bukti: tx?.bukti || ''
+    };
+  }
+
+  function resetAutoLogoutTimer() {
+    const loginActive = document.getElementById('view-login')?.classList.contains('active');
+    const publicActive = document.getElementById('view-public')?.classList.contains('active');
+    if (loginActive || publicActive) return;
+    clearTimeout(autoLogoutTimer);
+    autoLogoutTimer = setTimeout(() => logout(true), AUTO_LOGOUT_MINUTES * 60 * 1000);
+  }
+
+  function setupAutoLogoutListeners() {
+    ['click', 'keydown', 'touchstart', 'mousemove'].forEach(evt => {
+      window.addEventListener(evt, resetAutoLogoutTimer, { passive: true });
+    });
+  }
 
   let isDarkMode = false;
   
@@ -1431,6 +1743,7 @@
     if(viewName === 'dashboard') loadDashboard(isSilent);
     if(viewName === 'rekap') loadRekap();
     if(viewName === 'input') prepareInputForm();
+    resetAutoLogoutTimer();
   }
 
   async function doLogin() {
@@ -1444,6 +1757,8 @@
       document.getElementById('bottom-nav').classList.remove('hidden');
       hideLoader(); // Langsung matikan loader saat login valid
       navTo('dashboard', true); // Pindah ke dashboard dengan mode silent (tanpa loader tambahan)
+      resetAutoLogoutTimer();
+      syncOfflineQueue(true);
       Swal.fire({ title: 'Berhasil', text: 'Selamat Datang!', icon: 'success', timer: 1500, showConfirmButton: false });
     } else if(res) {
       hideLoader();
@@ -1453,11 +1768,15 @@
     }
   }
 
-  function logout() {
+  function logout(isAuto = false) {
+    clearTimeout(autoLogoutTimer);
     document.getElementById('bottom-nav').classList.add('hidden');
     document.getElementById('login-pass').value = '';
     document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
     document.getElementById('view-login').classList.add('active');
+    if (isAuto) {
+      Swal.fire({ title: 'Sesi Berakhir', text: `Aplikasi otomatis keluar setelah ${AUTO_LOGOUT_MINUTES} menit tidak aktif.`, icon: 'info' });
+    }
   }
 
   // Menambahkan pengecekan isSilent
@@ -1517,16 +1836,17 @@
     
     recentHistory.forEach(tx => {
       const isMin = tx.tipe === 'Pengeluaran';
+      const buktiUrl = sanitizeURL(tx.bukti);
       histHTML += `
         <div class="bg-white dark:bg-gray-800 p-4 md:p-5 rounded-2xl shadow-sm flex items-center justify-between border border-gray-50 dark:border-gray-700 hover:shadow-md transition">
-          <div class="flex items-center space-x-4">
-            <div class="w-10 h-10 md:w-12 md:h-12 rounded-full ${isMin ? 'bg-red-50 dark:bg-red-500/10 text-red-500' : 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-500'} flex items-center justify-center">
+          <div class="flex items-center space-x-4 min-w-0">
+            <div class="w-10 h-10 md:w-12 md:h-12 rounded-full ${isMin ? 'bg-red-50 dark:bg-red-500/10 text-red-500' : 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-500'} flex items-center justify-center shrink-0">
               <i class="fa-solid ${isMin ? 'fa-arrow-up' : 'fa-arrow-down'}"></i>
             </div>
-            <div>
-              <p class="text-sm md:text-base font-bold text-gray-800 dark:text-gray-100">${tx.keterangan}</p>
-              <p class="text-xs md:text-sm text-gray-400 dark:text-gray-500 mt-0.5">${tx.tanggal}</p>
-              ${tx.bukti ? `<a href="${tx.bukti}" target="_blank" class="text-[10px] md:text-xs text-blue-500 hover:underline mt-1 inline-block"><i class="fa-solid fa-link"></i> Lihat Bukti</a>` : ''}
+            <div class="min-w-0">
+              <p class="text-sm md:text-base font-bold text-gray-800 dark:text-gray-100 truncate">${escapeHTML(tx.keterangan)}</p>
+              <p class="text-xs md:text-sm text-gray-400 dark:text-gray-500 mt-0.5">${escapeHTML(tx.tanggal)}</p>
+              ${buktiUrl ? `<a href="${buktiUrl}" target="_blank" rel="noopener" class="text-[10px] md:text-xs text-blue-500 hover:underline mt-1 inline-block"><i class="fa-solid fa-link"></i> Lihat Bukti</a>` : ''}
             </div>
           </div>
           <span class="font-bold text-sm md:text-base ${isMin ? 'text-red-500' : 'text-emerald-500'}">
@@ -1660,26 +1980,282 @@
       hideLoader();
 
       if (res && res.success) {
-        Swal.fire({ title: 'Berhasil', text: res.message, icon: 'success' });
+        const savedPayload = { ...payload, tanggalText: formatInputDateToDisplay(payload.tanggal) };
         document.getElementById('form-input').reset();
         document.getElementById('input-tanggal').valueAsDate = new Date();
         removeImage();
         toggleBuktiUpload();
         loadDashboard(true);
+        showMiniReceipt(savedPayload, 'Transaksi berhasil disimpan');
       } else if (res) {
         Swal.fire({ title: 'Gagal', text: res.message, icon: 'error' });
+      } else {
+        queueOfflineTransaction(payload, 'Koneksi terputus saat menyimpan transaksi.');
       }
     } catch (err) {
       hideLoader();
-      Swal.fire({ title: 'Gagal', text: err.message || 'Transaksi gagal disimpan.', icon: 'error' });
+      const offlinePayload = { ...payload };
+      if (selectedBuktiFile && !offlinePayload.bukti) {
+        offlinePayload.catatanOffline = 'Bukti foto belum ikut tersimpan karena koneksi/upload terputus. Tambahkan ulang bukti setelah sinkron jika diperlukan.';
+      }
+      queueOfflineTransaction(offlinePayload, err.message || 'Transaksi disimpan ke antrean offline sementara.');
     }
   }
 
+
+  function getOfflineQueue() {
+    try {
+      return JSON.parse(localStorage.getItem(OFFLINE_QUEUE_KEY) || '[]');
+    } catch (err) {
+      return [];
+    }
+  }
+
+  function saveOfflineQueue(queue) {
+    localStorage.setItem(OFFLINE_QUEUE_KEY, JSON.stringify(queue));
+    updateOfflineQueueBadge();
+  }
+
+  function updateOfflineQueueBadge() {
+    const badge = document.getElementById('offline-queue-badge');
+    if (!badge) return;
+    const total = getOfflineQueue().length;
+    badge.innerHTML = `<i class="fa-solid ${total ? 'fa-clock' : 'fa-check'}"></i> ${total} antrean`;
+  }
+
+  function queueOfflineTransaction(payload, reason = 'Koneksi terputus.') {
+    const queue = getOfflineQueue();
+    const queuedPayload = {
+      ...payload,
+      offlineId: `offline-${Date.now()}`,
+      queuedAt: new Date().toISOString()
+    };
+    queue.push(queuedPayload);
+    saveOfflineQueue(queue);
+
+    const receiptPayload = { ...queuedPayload, tanggalText: formatInputDateToDisplay(queuedPayload.tanggal) };
+    showMiniReceipt(receiptPayload, 'Tersimpan sementara di perangkat', reason);
+    document.getElementById('form-input')?.reset();
+    const inputTanggal = document.getElementById('input-tanggal');
+    if (inputTanggal) inputTanggal.valueAsDate = new Date();
+    removeImage();
+    toggleBuktiUpload();
+  }
+
+  async function syncOfflineQueue(isSilent = false) {
+    const queue = getOfflineQueue();
+    if (!queue.length) {
+      updateOfflineQueueBadge();
+      if (!isSilent) Swal.fire({ title: 'Tidak Ada Antrean', text: 'Semua transaksi sudah tersinkron.', icon: 'info' });
+      return;
+    }
+
+    if (!navigator.onLine) {
+      if (!isSilent) Swal.fire({ title: 'Masih Offline', text: 'Hubungkan internet terlebih dahulu untuk sinkronisasi.', icon: 'warning' });
+      return;
+    }
+
+    if (!isSilent) showLoader();
+    const failed = [];
+    let successCount = 0;
+
+    for (const item of queue) {
+      const { offlineId, queuedAt, tanggalText, catatanOffline, ...payload } = item;
+      const res = await callAPI('simpanTransaksi', payload);
+      if (res && res.success) successCount += 1;
+      else failed.push(item);
+    }
+
+    saveOfflineQueue(failed);
+    if (!isSilent) hideLoader();
+
+    if (!isSilent || successCount > 0) {
+      Swal.fire({
+        title: failed.length ? 'Sinkron Sebagian' : 'Sinkron Berhasil',
+        text: `${successCount} transaksi berhasil dikirim${failed.length ? `, ${failed.length} masih tertahan.` : '.'}`,
+        icon: failed.length ? 'warning' : 'success'
+      });
+    }
+
+    if (successCount > 0) {
+      loadDashboard(true);
+      if (document.getElementById('view-rekap')?.classList.contains('active')) loadRekap();
+    }
+  }
+
+  function clearOfflineQueue() {
+    const total = getOfflineQueue().length;
+    if (!total) return Swal.fire({ title: 'Kosong', text: 'Tidak ada antrean offline.', icon: 'info' });
+
+    Swal.fire({
+      title: 'Kosongkan Antrean?',
+      text: `${total} transaksi sementara akan dihapus dari perangkat ini.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Ya, kosongkan',
+      cancelButtonText: 'Batal',
+      confirmButtonColor: '#ef4444'
+    }).then(result => {
+      if (result.isConfirmed) {
+        saveOfflineQueue([]);
+        Swal.fire({ title: 'Berhasil', text: 'Antrean offline dikosongkan.', icon: 'success' });
+      }
+    });
+  }
+
+  function buildReceiptHTML(tx, statusText, note = '') {
+    const tanggalText = tx.tanggalText || formatInputDateToDisplay(tx.tanggal) || tx.tanggal || '-';
+    const isOut = tx.tipe === 'Pengeluaran';
+    const buktiUrl = sanitizeURL(tx.bukti);
+    return `
+      <div class="receipt-card">
+        <div class="receipt-header">
+          <p class="text-xs opacity-80 font-bold uppercase tracking-[0.18em]">Struk Mini Kas</p>
+          <h3 class="text-lg font-black mt-1">Wali 9 P2S Abu Zairi</h3>
+          <p class="text-xs opacity-80 mt-1">${escapeHTML(statusText || 'Transaksi')}</p>
+        </div>
+        <div class="receipt-row"><span>Tanggal</span><span>${escapeHTML(tanggalText)}</span></div>
+        <div class="receipt-row"><span>Tipe</span><span>${escapeHTML(tx.tipe || '-')}</span></div>
+        <div class="receipt-row"><span>Nominal</span><span class="${isOut ? 'text-red-500' : 'text-emerald-500'}">${isOut ? '-' : '+'}${formatRupiah(tx.nominal)}</span></div>
+        <div class="receipt-row"><span>Keterangan</span><span>${escapeHTML(tx.keterangan || '-')}</span></div>
+        <div class="receipt-row"><span>Bukti</span><span>${buktiUrl ? 'Terlampir' : '-'}</span></div>
+        ${note ? `<div class="p-3 text-xs text-amber-600 dark:text-amber-300 bg-amber-50 dark:bg-amber-500/10">${escapeHTML(note)}</div>` : ''}
+      </div>
+    `;
+  }
+
+  async function copyReceiptText(tx, statusText = 'Transaksi') {
+    const tanggalText = tx.tanggalText || formatInputDateToDisplay(tx.tanggal) || tx.tanggal || '-';
+    const text = [
+      'STRUK MINI KAS WALI 9 P2S ABU ZAIRI',
+      `Status: ${statusText}`,
+      `Tanggal: ${tanggalText}`,
+      `Tipe: ${tx.tipe || '-'}`,
+      `Nominal: ${tx.tipe === 'Pengeluaran' ? '-' : '+'}${formatRupiah(tx.nominal)}`,
+      `Keterangan: ${tx.keterangan || '-'}`,
+      `Bukti: ${tx.bukti || '-'}`
+    ].join('\n');
+
+    const ok = await copyTextToClipboard(text);
+    Swal.fire({ title: ok ? 'Struk Disalin' : 'Gagal Menyalin', icon: ok ? 'success' : 'error', timer: 1400, showConfirmButton: false });
+  }
+
+  function showMiniReceipt(tx, statusText = 'Transaksi berhasil disimpan', note = '') {
+    Swal.fire({
+      title: 'Struk Mini',
+      html: buildReceiptHTML(tx, statusText, note),
+      showCancelButton: true,
+      confirmButtonText: '<i class="fa-solid fa-copy mr-1"></i> Salin Struk',
+      cancelButtonText: 'Tutup',
+      confirmButtonColor: '#0f172a',
+      cancelButtonColor: '#64748b',
+      customClass: { popup: 'swal-wide-form' }
+    }).then(result => {
+      if (result.isConfirmed) copyReceiptText(tx, statusText);
+    });
+  }
+
+
+  function setupPWA() {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js').catch(err => console.warn('Service worker gagal didaftarkan:', err));
+    }
+
+    window.addEventListener('beforeinstallprompt', (event) => {
+      event.preventDefault();
+      deferredInstallPrompt = event;
+      const btn = document.getElementById('install-app-btn');
+      if (btn) btn.disabled = false;
+    });
+
+    const btn = document.getElementById('install-app-btn');
+    if (btn && !deferredInstallPrompt) {
+      btn.disabled = false;
+    }
+  }
+
+  async function installApp() {
+    if (deferredInstallPrompt) {
+      deferredInstallPrompt.prompt();
+      const choice = await deferredInstallPrompt.userChoice;
+      deferredInstallPrompt = null;
+      Swal.fire({
+        title: choice.outcome === 'accepted' ? 'Instalasi Diproses' : 'Instalasi Dibatalkan',
+        text: choice.outcome === 'accepted' ? 'Ikuti instruksi browser untuk menambahkan aplikasi ke layar utama.' : 'Anda masih bisa install lewat menu browser.',
+        icon: choice.outcome === 'accepted' ? 'success' : 'info'
+      });
+      return;
+    }
+
+    Swal.fire({
+      title: 'Cara Install',
+      html: `
+        <div class="text-left text-sm leading-relaxed">
+          <p class="mb-2"><b>Android/Chrome:</b> buka menu titik tiga browser lalu pilih <b>Add to Home screen</b> atau <b>Install app</b>.</p>
+          <p><b>iPhone/Safari:</b> tekan tombol <b>Share</b>, lalu pilih <b>Add to Home Screen</b>.</p>
+        </div>
+      `,
+      icon: 'info'
+    });
+  }
+
+  async function loadPublicReport() {
+    document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+    document.getElementById('view-public')?.classList.add('active');
+    document.getElementById('bottom-nav')?.classList.add('hidden');
+
+    showLoader();
+    const dashboard = await callAPI('getDashboardData', { filter: 'semua' });
+    const rekap = await callAPI('getRekapData');
+    hideLoader();
+
+    if (dashboard) {
+      document.getElementById('public-saldo').innerText = formatRupiah(dashboard.saldoTotal);
+      document.getElementById('public-in').innerText = formatRupiah(dashboard.pemasukan);
+      document.getElementById('public-out').innerText = formatRupiah(dashboard.pengeluaran);
+    }
+
+    const publicUpdated = document.getElementById('public-updated');
+    if (publicUpdated) publicUpdated.innerText = `Diperbarui: ${new Date().toLocaleString('id-ID')}`;
+
+    const rows = Array.isArray(rekap) ? rekap.slice(0, 12) : [];
+    const list = document.getElementById('public-list');
+    if (!list) return;
+
+    if (!rows.length) {
+      list.innerHTML = '<tr><td colspan="4" class="p-8 text-center text-gray-400">Belum ada transaksi yang dapat ditampilkan.</td></tr>';
+      return;
+    }
+
+    list.innerHTML = rows.map(tx => {
+      const isMin = tx.tipe === 'Pengeluaran';
+      return `
+        <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/60 transition">
+          <td class="px-5 py-4 whitespace-nowrap">${escapeHTML(tx.tanggal)}</td>
+          <td class="px-5 py-4 font-semibold text-gray-800 dark:text-gray-100">${escapeHTML(tx.keterangan)}</td>
+          <td class="px-5 py-4 text-center">
+            <span class="${isMin ? 'text-red-500 bg-red-50 dark:bg-red-500/10' : 'text-emerald-500 bg-emerald-50 dark:bg-emerald-500/10'} px-2.5 py-1 rounded-md text-[11px] uppercase tracking-wide font-bold">${escapeHTML(tx.tipe)}</span>
+          </td>
+          <td class="px-5 py-4 text-right font-black ${isMin ? 'text-red-500' : 'text-emerald-500'}">${isMin ? '-' : '+'}${formatRupiah(tx.nominal)}</td>
+        </tr>`;
+    }).join('');
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
+    setupAutoLogoutListeners();
+    setupPWA();
+    updateOfflineQueueBadge();
+    window.addEventListener('online', () => syncOfflineQueue(true));
+
     document.querySelectorAll('input[name="tipe"]').forEach(input => {
       input.addEventListener('change', toggleBuktiUpload);
     });
-    prepareInputForm();
+
+    if (isPublicMode()) {
+      loadPublicReport();
+    } else {
+      prepareInputForm();
+    }
   });
 
   // --- AKHIR BLOK FUNGSI UPLOAD GAMBAR ---
@@ -1727,19 +2303,20 @@
   function filterRekap() {
     const filterBulan = document.getElementById('filter-rekap-bulan').value;
     const filterTahun = document.getElementById('filter-rekap-tahun').value;
+    const keyword = (document.getElementById('search-rekap')?.value || '').trim().toLowerCase();
     
     currentFilteredData = allRekapData.filter(tx => {
-      const parts = tx.tanggal.split(' '); // ["12", "Jun", "2026"]
-      if (parts.length !== 3) return true;
-      
+      const parts = String(tx.tanggal || '').split(' '); // ["12", "Jun", "2026"]
       const monthMap = {'Jan':'01', 'Feb':'02', 'Mar':'03', 'Apr':'04', 'May':'05', 'Mei':'05', 'Jun':'06', 'Jul':'07', 'Aug':'08', 'Ags':'08', 'Sep':'09', 'Oct':'10', 'Okt':'10', 'Nov':'11', 'Dec':'12', 'Des':'12'};
-      const txMonth = monthMap[parts[1]] || '00';
-      const txYear = parts[2];
+      const txMonth = parts.length === 3 ? (monthMap[parts[1]] || '00') : '00';
+      const txYear = parts.length === 3 ? parts[2] : '';
 
       let matchBulan = (filterBulan === 'semua' || txMonth === filterBulan);
       let matchTahun = (filterTahun === 'semua' || txYear === filterTahun);
+      const haystack = `${tx.tanggal || ''} ${tx.keterangan || ''} ${tx.tipe || ''} ${tx.nominal || ''}`.toLowerCase();
+      const matchKeyword = !keyword || haystack.includes(keyword);
 
-      return matchBulan && matchTahun;
+      return matchBulan && matchTahun && matchKeyword;
     });
 
     currentPage = 1; // Reset kembali ke halaman 1 setiap kali filter diubah
@@ -1754,24 +2331,33 @@
 
     let html = '';
     if(paginatedData.length === 0) {
-      html = '<tr><td colspan="5" class="p-10 text-center text-gray-400 dark:text-gray-500"><i class="fa-regular fa-folder-open text-4xl mb-3 opacity-50 block"></i>Data tidak ditemukan</td></tr>';
+      html = '<tr><td colspan="6" class="p-10 text-center text-gray-400 dark:text-gray-500"><i class="fa-regular fa-folder-open text-4xl mb-3 opacity-50 block"></i>Data tidak ditemukan</td></tr>';
     } else {
       paginatedData.forEach(tx => {
         const isMin = tx.tipe === 'Pengeluaran';
+        const buktiUrl = sanitizeURL(tx.bukti);
+        const globalIndex = allRekapData.indexOf(tx);
         html += `
           <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition group">
-            <td class="px-5 py-4 whitespace-nowrap text-gray-800 dark:text-gray-200">${tx.tanggal}</td>
-            <td class="px-5 py-4 font-medium text-gray-800 dark:text-gray-100">${tx.keterangan}</td>
+            <td class="px-5 py-4 whitespace-nowrap text-gray-800 dark:text-gray-200">${escapeHTML(tx.tanggal)}</td>
+            <td class="px-5 py-4 font-medium text-gray-800 dark:text-gray-100">${escapeHTML(tx.keterangan)}</td>
             <td class="px-5 py-4 text-center whitespace-nowrap">
               <span class="${isMin ? 'text-red-500 bg-red-50 dark:bg-red-500/10' : 'text-emerald-500 bg-emerald-50 dark:bg-emerald-500/10'} px-2.5 py-1 rounded-md text-[11px] uppercase tracking-wide font-bold">
-                ${tx.tipe}
+                ${escapeHTML(tx.tipe)}
               </span>
             </td>
             <td class="px-5 py-4 text-right font-bold whitespace-nowrap ${isMin ? 'text-red-500' : 'text-emerald-500'}">
               ${isMin ? '-' : '+'}${formatRupiah(tx.nominal)}
             </td>
             <td class="px-5 py-4 text-center">
-              ${tx.bukti ? `<a href="${tx.bukti}" target="_blank" class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-500/10 text-blue-500 hover:bg-blue-500 hover:text-white transition" title="Lihat Bukti"><i class="fa-solid fa-image"></i></a>` : '<span class="text-gray-300 dark:text-gray-600">-</span>'}
+              ${buktiUrl ? `<a href="${buktiUrl}" target="_blank" rel="noopener" class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-500/10 text-blue-500 hover:bg-blue-500 hover:text-white transition" title="Lihat Bukti"><i class="fa-solid fa-image"></i></a>` : '<span class="text-gray-300 dark:text-gray-600">-</span>'}
+            </td>
+            <td class="px-5 py-4 text-center whitespace-nowrap">
+              <div class="inline-flex items-center gap-1.5">
+                <button onclick="showDetailTransaksi(${globalIndex})" class="mini-action-btn bg-slate-50 dark:bg-slate-500/10 text-slate-600 dark:text-slate-300 hover:bg-slate-700 hover:text-white" title="Detail"><i class="fa-solid fa-eye text-xs"></i></button>
+                <button onclick="openEditTransaksi(${globalIndex})" class="mini-action-btn bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-300 hover:bg-amber-500 hover:text-white" title="Edit"><i class="fa-solid fa-pen text-xs"></i></button>
+                <button onclick="confirmDeleteTransaksi(${globalIndex})" class="mini-action-btn bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-300 hover:bg-red-500 hover:text-white" title="Hapus"><i class="fa-solid fa-trash text-xs"></i></button>
+              </div>
             </td>
           </tr>
         `;
@@ -1781,6 +2367,166 @@
     
     // Menjalankan fungsi untuk merender tombol Next/Prev
     renderPaginationControls();
+  }
+
+
+
+  function showDetailTransaksi(index) {
+    const tx = allRekapData[index];
+    if (!tx) return Swal.fire({ title: 'Data Tidak Ditemukan', icon: 'error' });
+    const buktiUrl = sanitizeURL(tx.bukti);
+    const receiptHTML = buildReceiptHTML({ ...tx, tanggalText: tx.tanggal }, 'Detail Transaksi');
+
+    Swal.fire({
+      title: 'Detail Transaksi',
+      html: `
+        ${receiptHTML}
+        ${buktiUrl ? `<a href="${buktiUrl}" target="_blank" rel="noopener" class="mt-4 inline-flex items-center justify-center gap-2 w-full bg-blue-600 text-white font-bold py-3 rounded-2xl"><i class="fa-solid fa-image"></i> Buka Bukti Foto</a>` : ''}
+      `,
+      showCancelButton: true,
+      confirmButtonText: '<i class="fa-solid fa-copy mr-1"></i> Salin Struk',
+      cancelButtonText: 'Tutup',
+      confirmButtonColor: '#0f172a',
+      cancelButtonColor: '#64748b',
+      customClass: { popup: 'swal-wide-form' }
+    }).then(result => {
+      if (result.isConfirmed) copyReceiptText({ ...tx, tanggalText: tx.tanggal }, 'Detail Transaksi');
+    });
+  }
+
+  function buildMutationPayload(tx, updatedPayload = {}) {
+    return {
+      id: getTxIdentity(tx),
+      ref: buildTxReference(tx),
+      payload: updatedPayload
+    };
+  }
+
+  async function openEditTransaksi(index) {
+    const tx = allRekapData[index];
+    if (!tx) return Swal.fire({ title: 'Data Tidak Ditemukan', icon: 'error' });
+
+    const tanggalInput = displayDateToInput(tx.tanggal);
+    const nominalValue = new Intl.NumberFormat('id-ID').format(Number(tx.nominal) || 0);
+    const tipe = tx.tipe === 'Pengeluaran' ? 'Pengeluaran' : 'Pemasukan';
+
+    const result = await Swal.fire({
+      title: 'Edit Transaksi',
+      html: `
+        <div class="text-left space-y-3">
+          <label class="block text-xs font-bold text-gray-500 dark:text-gray-400">Tanggal</label>
+          <input id="edit-tanggal" type="date" value="${escapeHTML(tanggalInput)}" class="swal2-input !w-full !mx-0 !mt-0 text-sm">
+
+          <label class="block text-xs font-bold text-gray-500 dark:text-gray-400">Tipe</label>
+          <select id="edit-tipe" class="swal2-input !w-full !mx-0 !mt-0 text-sm">
+            <option value="Pemasukan" ${tipe === 'Pemasukan' ? 'selected' : ''}>Pemasukan</option>
+            <option value="Pengeluaran" ${tipe === 'Pengeluaran' ? 'selected' : ''}>Pengeluaran</option>
+          </select>
+
+          <label class="block text-xs font-bold text-gray-500 dark:text-gray-400">Nominal</label>
+          <input id="edit-nominal" inputmode="numeric" value="${escapeHTML(nominalValue)}" class="swal2-input !w-full !mx-0 !mt-0 text-sm" placeholder="0">
+
+          <label class="block text-xs font-bold text-gray-500 dark:text-gray-400">Keterangan</label>
+          <textarea id="edit-keterangan" class="swal2-textarea !w-full !mx-0 !mt-0 text-sm" rows="3">${escapeHTML(tx.keterangan)}</textarea>
+
+          <label class="block text-xs font-bold text-gray-500 dark:text-gray-400">URL Bukti Foto</label>
+          <input id="edit-bukti" value="${escapeHTML(tx.bukti || '')}" class="swal2-input !w-full !mx-0 !mt-0 text-sm" placeholder="https://...">
+          <p class="text-xs text-amber-600 dark:text-amber-300 leading-relaxed">
+            Edit/hapus membutuhkan dukungan action <b>editTransaksi</b> dan <b>hapusTransaksi</b> pada Google Apps Script.
+          </p>
+        </div>
+      `,
+      customClass: { popup: 'swal-wide-form' },
+      focusConfirm: false,
+      showCancelButton: true,
+      confirmButtonText: 'Simpan Perubahan',
+      cancelButtonText: 'Batal',
+      confirmButtonColor: '#10b981',
+      didOpen: () => {
+        const nominalInput = document.getElementById('edit-nominal');
+        nominalInput.addEventListener('input', () => formatRupiahInput(nominalInput));
+      },
+      preConfirm: () => {
+        const tanggal = document.getElementById('edit-tanggal').value;
+        const tipeBaru = document.getElementById('edit-tipe').value;
+        const nominalRaw = document.getElementById('edit-nominal').value.replace(/\D/g, '');
+        const keterangan = document.getElementById('edit-keterangan').value.trim();
+        const bukti = document.getElementById('edit-bukti').value.trim();
+
+        if (!tanggal) return Swal.showValidationMessage('Tanggal wajib diisi.');
+        if (!nominalRaw || Number(nominalRaw) <= 0) return Swal.showValidationMessage('Nominal wajib lebih dari 0.');
+        if (!keterangan) return Swal.showValidationMessage('Keterangan wajib diisi.');
+
+        return { tanggal, tipe: tipeBaru, nominal: Number(nominalRaw), keterangan, bukti };
+      }
+    });
+
+    if (!result.isConfirmed) return;
+
+    showLoader();
+    const res = await callAPI('editTransaksi', buildMutationPayload(tx, result.value));
+    hideLoader();
+
+    if (res && res.success) {
+      Swal.fire({ title: 'Berhasil', text: res.message || 'Transaksi berhasil diperbarui.', icon: 'success' });
+      loadRekap();
+      loadDashboard(true);
+    } else {
+      Swal.fire({
+        title: 'Belum Bisa Edit',
+        text: (res && res.message) || 'Frontend sudah siap, tetapi Google Apps Script belum mendukung action editTransaksi.',
+        icon: 'warning'
+      });
+    }
+  }
+
+  async function confirmDeleteTransaksi(index) {
+    const tx = allRekapData[index];
+    if (!tx) return Swal.fire({ title: 'Data Tidak Ditemukan', icon: 'error' });
+
+    const result = await Swal.fire({
+      title: 'Hapus Transaksi?',
+      html: `
+        <div class="text-left text-sm leading-relaxed">
+          <p class="mb-3">Transaksi berikut akan dihapus:</p>
+          <div class="p-3 rounded-2xl bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-200 mb-3">
+            <b>${escapeHTML(tx.keterangan)}</b><br>
+            ${escapeHTML(tx.tanggal)} • ${escapeHTML(tx.tipe)} • ${formatRupiah(tx.nominal)}
+          </div>
+          <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-1">Masukkan password admin</label>
+          <input id="delete-password" type="password" class="swal2-input !w-full !mx-0 !mt-0 text-sm" placeholder="Password admin">
+        </div>
+      `,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Ya, Hapus',
+      cancelButtonText: 'Batal',
+      confirmButtonColor: '#ef4444',
+      customClass: { popup: 'swal-wide-form' },
+      preConfirm: () => {
+        const password = document.getElementById('delete-password').value;
+        if (!password) return Swal.showValidationMessage('Password wajib diisi untuk menghapus transaksi.');
+        return password;
+      }
+    });
+
+    if (!result.isConfirmed) return;
+
+    showLoader();
+    const res = await callAPI('hapusTransaksi', { ...buildMutationPayload(tx), password: result.value });
+    hideLoader();
+
+    if (res && res.success) {
+      Swal.fire({ title: 'Berhasil', text: res.message || 'Transaksi berhasil dihapus.', icon: 'success' });
+      loadRekap();
+      loadDashboard(true);
+    } else {
+      Swal.fire({
+        title: 'Belum Bisa Hapus',
+        text: (res && res.message) || 'Frontend sudah siap, tetapi Google Apps Script belum mendukung action hapusTransaksi.',
+        icon: 'warning'
+      });
+    }
   }
 
   function renderPaginationControls() {
@@ -1856,19 +2602,17 @@
     if(!currentFilteredData || currentFilteredData.length === 0) return Swal.fire('Info', 'Tidak ada data untuk diexport', 'info');
     
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    
-    doc.setFontSize(16);
-    doc.text("Rekapitulasi Keuangan Wali 9 P2S", 14, 20);
-    doc.setFontSize(10);
-    doc.setTextColor(100);
-    doc.text(`Dicetak pada: ${new Date().toLocaleString('id-ID')}`, 14, 28);
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const marginX = 14;
+    const periodText = getSelectedPeriodText();
+    const printedAt = new Date().toLocaleString('id-ID');
 
     let totalMasuk = 0;
     let totalKeluar = 0;
 
     // Urutkan data khusus untuk PDF: transaksi paling lama di atas, terbaru di bawah.
-    // Tampilan tabel rekap di aplikasi tetap mengikuti urutan semula.
     const monthMapPDF = {
       'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'May': 4, 'Mei': 4, 'Jun': 5,
       'Jul': 6, 'Aug': 7, 'Ags': 7, 'Sep': 8, 'Oct': 9, 'Okt': 9, 'Nov': 10, 'Dec': 11, 'Des': 11
@@ -1877,7 +2621,6 @@
     const parseTanggalPDF = (tanggalText) => {
       const parts = (tanggalText || '').split(' ');
       if (parts.length !== 3) return 0;
-
       const day = parseInt(parts[0], 10) || 1;
       const month = Object.prototype.hasOwnProperty.call(monthMapPDF, parts[1]) ? monthMapPDF[parts[1]] : 0;
       const year = parseInt(parts[2], 10) || 1970;
@@ -1886,35 +2629,108 @@
 
     const pdfOrderedData = [...currentFilteredData].sort((a, b) => parseTanggalPDF(a.tanggal) - parseTanggalPDF(b.tanggal));
 
-    const bodyData = pdfOrderedData.map((tx, idx) => {
+    pdfOrderedData.forEach(tx => {
       let nom = parseFloat(tx.nominal) || 0;
       if (tx.tipe === 'Pemasukan') totalMasuk += nom;
       else totalKeluar += nom;
+    });
 
+    const saldoAkhir = totalMasuk - totalKeluar;
+
+    // Kop resmi laporan
+    doc.setFillColor(15, 23, 42);
+    doc.rect(0, 0, pageWidth, 34, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(16);
+    doc.text('LAPORAN KEUANGAN BULANAN', pageWidth / 2, 13, { align: 'center' });
+    doc.setFontSize(12);
+    doc.text('KAS WALI 9 P2S ABU ZAIRI', pageWidth / 2, 21, { align: 'center' });
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.text(`Periode: ${periodText}  •  Dicetak: ${printedAt}`, pageWidth / 2, 28, { align: 'center' });
+
+    // Ringkasan angka
+    const cardY = 42;
+    const cardW = (pageWidth - (marginX * 2) - 8) / 3;
+    const cards = [
+      { title: 'TOTAL PEMASUKAN', value: formatRupiah(totalMasuk), color: [16, 185, 129] },
+      { title: 'TOTAL PENGELUARAN', value: formatRupiah(totalKeluar), color: [239, 68, 68] },
+      { title: 'SALDO AKHIR', value: formatRupiah(saldoAkhir), color: [15, 23, 42] }
+    ];
+
+    cards.forEach((card, idx) => {
+      const x = marginX + idx * (cardW + 4);
+      doc.setDrawColor(226, 232, 240);
+      doc.setFillColor(248, 250, 252);
+      doc.roundedRect(x, cardY, cardW, 22, 3, 3, 'FD');
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(7.5);
+      doc.setTextColor(100, 116, 139);
+      doc.text(card.title, x + 4, cardY + 7);
+      doc.setFontSize(10.5);
+      doc.setTextColor(card.color[0], card.color[1], card.color[2]);
+      doc.text(card.value, x + 4, cardY + 16);
+    });
+
+    const bodyData = pdfOrderedData.map((tx, idx) => {
+      let nom = parseFloat(tx.nominal) || 0;
       return [
         idx + 1,
         tx.tanggal,
         tx.keterangan,
         tx.tipe,
         (tx.tipe === 'Pengeluaran' ? '-' : '+') + nom.toLocaleString('id-ID'),
-        tx.bukti ? 'Terlampir' : '-'
+        tx.bukti ? 'Ada' : '-'
       ];
     });
 
-    let saldoAkhir = totalMasuk - totalKeluar;
-
     doc.autoTable({
-      startY: 35,
+      startY: 72,
       head: [['No', 'Tanggal', 'Keterangan', 'Tipe', 'Nominal (Rp)', 'Bukti']],
       body: bodyData,
       foot: [
-        [{ content: 'Total Pemasukan', colSpan: 4, styles: { halign: 'right' } }, '+' + totalMasuk.toLocaleString('id-ID'), ''],
-        [{ content: 'Total Pengeluaran', colSpan: 4, styles: { halign: 'right' } }, '-' + totalKeluar.toLocaleString('id-ID'), ''],
-        [{ content: 'SISA SALDO AKHIR', colSpan: 4, styles: { halign: 'right', fontStyle: 'bold', fillColor: [16, 185, 129], textColor: 255 } }, 'Rp ' + saldoAkhir.toLocaleString('id-ID'), '']
+        [{ content: 'Total Pemasukan', colSpan: 4, styles: { halign: 'right', fontStyle: 'bold' } }, '+' + totalMasuk.toLocaleString('id-ID'), ''],
+        [{ content: 'Total Pengeluaran', colSpan: 4, styles: { halign: 'right', fontStyle: 'bold' } }, '-' + totalKeluar.toLocaleString('id-ID'), ''],
+        [{ content: 'SISA SALDO AKHIR', colSpan: 4, styles: { halign: 'right', fontStyle: 'bold', fillColor: [15, 23, 42], textColor: 255 } }, 'Rp ' + saldoAkhir.toLocaleString('id-ID'), '']
       ],
       theme: 'grid',
-      headStyles: { fillColor: [16, 185, 129] } 
+      styles: { fontSize: 8, cellPadding: 2.6, lineColor: [226, 232, 240], lineWidth: 0.1 },
+      headStyles: { fillColor: [15, 23, 42], textColor: 255, fontStyle: 'bold' },
+      alternateRowStyles: { fillColor: [248, 250, 252] },
+      columnStyles: {
+        0: { cellWidth: 10, halign: 'center' },
+        1: { cellWidth: 24 },
+        2: { cellWidth: 65 },
+        3: { cellWidth: 25, halign: 'center' },
+        4: { cellWidth: 34, halign: 'right' },
+        5: { cellWidth: 18, halign: 'center' }
+      },
+      didDrawPage: function () {
+        const pageNumber = doc.internal.getNumberOfPages();
+        doc.setFontSize(8);
+        doc.setTextColor(148, 163, 184);
+        doc.text(`Kas Wali 9 P2S Abu Zairi • Halaman ${pageNumber}`, pageWidth / 2, pageHeight - 8, { align: 'center' });
+      }
     });
+
+    let y = doc.lastAutoTable.finalY + 14;
+    if (y > pageHeight - 52) {
+      doc.addPage();
+      y = 24;
+    }
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.setTextColor(15, 23, 42);
+    doc.text('Mengetahui,', marginX + 12, y);
+    doc.text('Bendahara,', pageWidth - marginX - 48, y);
+    doc.text('Ketua/Pengurus', marginX + 8, y + 34);
+    doc.text('Bendahara Wali 9', pageWidth - marginX - 51, y + 34);
+
+    doc.setDrawColor(148, 163, 184);
+    doc.line(marginX + 4, y + 29, marginX + 52, y + 29);
+    doc.line(pageWidth - marginX - 58, y + 29, pageWidth - marginX - 6, y + 29);
 
     const pdfBlob = doc.output('blob');
     const pdfBlobUrl = URL.createObjectURL(pdfBlob);
@@ -1935,9 +2751,9 @@
       <div class="pdf-preview-wrapper">
         <div class="pdf-mobile-fallback">
           <div class="pdf-mobile-icon"><i class="fa-solid fa-file-pdf"></i></div>
-          <h3 class="text-base font-bold mb-2">PDF berhasil dibuat</h3>
+          <h3 class="text-base font-bold mb-2">PDF resmi berhasil dibuat</h3>
           <p class="text-sm text-gray-500 dark:text-gray-300 leading-relaxed max-w-xs">
-            Browser HP biasanya tidak bisa menampilkan preview PDF langsung di dalam popup. Tekan tombol di bawah untuk membuka PDF di tab baru, atau gunakan tombol Download.
+            Preview PDF di HP kadang dibatasi browser. Tekan tombol Buka PDF untuk melihat laporan di tab baru, atau Download untuk menyimpan.
           </p>
           <button type="button" id="open-pdf-mobile-btn" class="pdf-open-mobile-btn">
             <i class="fa-solid fa-up-right-from-square"></i> Buka PDF
@@ -1946,16 +2762,12 @@
       </div>
     ` : `
       <div class="pdf-preview-wrapper">
-        <iframe
-          src="${pdfPreviewUrl}"
-          class="pdf-preview-frame"
-          title="Preview Laporan PDF">
-        </iframe>
+        <iframe src="${pdfPreviewUrl}" class="pdf-preview-frame" title="Preview Laporan PDF Resmi"></iframe>
       </div>
     `;
     
     Swal.fire({
-      title: 'Preview Laporan PDF',
+      title: 'Preview Laporan PDF Resmi',
       html: previewHTML,
       width: 'auto',
       padding: 0,
@@ -1980,7 +2792,7 @@
       showCloseButton: true
     }).then((result) => {
       if (result.isConfirmed) {
-        doc.save(`Rekap_Wali9_${new Date().getTime()}.pdf`);
+        doc.save(`Laporan_Bulanan_Wali9_${periodText.replace(/\s+/g, '_')}_${Date.now()}.pdf`);
       }
     });
   }
