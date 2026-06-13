@@ -15,6 +15,7 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   
+  <!-- Tambahan Library untuk Export Excel & PDF -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
@@ -199,6 +200,7 @@
     <p class="text-sm text-gray-600 dark:text-gray-300 font-medium tracking-wide">Memproses...</p>
   </div>
 
+  <!-- NAVIGATION BAR -->
   <nav id="bottom-nav" class="bottom-nav glass hidden bg-white/80 dark:bg-gray-900/80 border-t border-gray-100 dark:border-gray-800">
     <div class="hidden md:flex items-center mr-auto cursor-pointer">
        <div class="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center text-white text-sm shadow-sm mr-3">
@@ -432,6 +434,7 @@
           </div>
         </div>
 
+        <!-- Tabel Data -->
         <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden min-h-[400px]">
           <div class="overflow-x-auto">
             <table class="w-full text-left text-sm text-gray-600 dark:text-gray-300">
@@ -507,7 +510,7 @@
         
         <div class="text-center mt-10 opacity-50 pb-8">
           <p class="text-xs md:text-sm font-medium dark:text-white">Aplikasi Wali 9 P2S Abu Zairi</p>
-          <p class="text-[10px] md:text-xs dark:text-gray-300">Versi 1.7 • PDF & UI Restored</p>
+          <p class="text-[10px] md:text-xs dark:text-gray-300">Versi 1.7 • Stable Murni Database</p>
         </div>
       </div>
     </div>
@@ -516,6 +519,7 @@
 </div>
 
 <script>
+  // GANTI INI JIKA ADA ERROR KONEKSI TERPUTUS!
   const API_URL = "https://script.google.com/macros/s/AKfycbwIQ_jy1OPTTrrwQvA9nyT7-AylRfBm7Rh154wdP7Z77mzdMCOesHJzz97NZksyupPh/exec"; 
 
   const formatRupiah = (angka) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
@@ -553,90 +557,28 @@
 
   initTheme();
 
-  let dummyStorage = [
-    {id: 'TX-1', tanggal: '12 Jun 2026', tipe: 'Pemasukan', nominal: 2500000, keterangan: 'Saldo Awal Bulan', bukti: ''},
-    {id: 'TX-2', tanggal: '13 Jun 2026', tipe: 'Pengeluaran', nominal: 150000, keterangan: 'Beli Kebutuhan ATK', bukti: 'https://i.ibb.co/6yq7hW7/placeholder.png'},
-    {id: 'TX-3', tanggal: '05 Jan 2026', tipe: 'Pemasukan', nominal: 5000000, keterangan: 'Sumbangan Donatur', bukti: ''},
-    {id: 'TX-4', tanggal: '20 Mar 2026', tipe: 'Pengeluaran', nominal: 750000, keterangan: 'Perbaikan Fasilitas', bukti: ''},
-  ];
-  let dummyTahun = []; 
-
+  // MENGHAPUS SEMUA DATA DUMMY AGAR MURNI MENGGUNAKAN SPREADSHEET ASLI
+  // MENGOPTIMALKAN FETCH API UNTUK LOADING YANG LEBIH CEPAT
   async function callAPI(action, payload = {}) {
     try {
       const response = await fetch(API_URL, {
         method: "POST",
+        // Header text/plain memaksa browser melewati preflight CORS lambat ke server Google
+        headers: {
+          "Content-Type": "text/plain;charset=utf-8" 
+        },
         body: JSON.stringify({ action: action, payload: payload })
       });
       return await response.json();
     } catch (err) {
-      console.warn("API Gagal, beralih ke Mode Preview Dummy.");
-      return handleDummyData(action, payload);
+      console.error("API Gagal:", err);
+      Swal.fire({ 
+        title: 'Koneksi Terputus', 
+        text: 'Gagal terhubung ke Database Google Sheet. Pastikan Anda terhubung ke internet dan API_URL sudah benar.', 
+        icon: 'error' 
+      });
+      return null;
     }
-  }
-
-  function handleDummyData(action, payload) {
-    return new Promise(resolve => {
-      setTimeout(() => {
-        if(action === 'cekLogin') resolve({success: true});
-        if(action === 'simpanTransaksi') {
-            const dateStr = new Date(payload.tanggal).toLocaleDateString('id-ID', {day: '2-digit', month: 'short', year: 'numeric'});
-            dummyStorage.unshift({ id: 'TX-'+Date.now(), tanggal: dateStr, tipe: payload.tipe, nominal: parseFloat(payload.nominal), keterangan: payload.keterangan, bukti: payload.bukti || '' });
-            resolve({success: true, message: 'Data Dummy berhasil disimpan!'});
-        }
-        if(action === 'getRekapData') resolve(dummyStorage);
-        if(action === 'ubahPassword') resolve({success: true, message: 'Password Dummy berhasil diubah!'});
-        
-        if(action === 'getTahun') resolve({success: true, data: dummyTahun});
-        if(action === 'tambahTahun') {
-            if(!dummyTahun.includes(payload.tahun)) dummyTahun.unshift(payload.tahun);
-            resolve({success: true, message: 'Tahun Dummy berhasil ditambahkan!'});
-        }
-
-        if(action === 'getDashboardData') {
-            let masuk = 0, keluar = 0;
-            let historyLimit = dummyStorage.slice(0, 5); 
-            
-            let targetYear = payload && payload.filter ? payload.filter : dummyTahun[0];
-            let chartIn = [0,0,0,0,0,0,0,0,0,0,0,0];
-            let chartOut = [0,0,0,0,0,0,0,0,0,0,0,0];
-            
-            let uniqueYears = new Set(dummyTahun); 
-
-            dummyStorage.forEach(t => { 
-              let txYear = t.tanggal.split(' ')[2]; 
-              if(txYear) uniqueYears.add(txYear); 
-              
-              let txMonthStr = t.tanggal.split(' ')[1]; 
-              const monthMap = {'Jan':0, 'Feb':1, 'Mar':2, 'Apr':3, 'Mei':4, 'Jun':5, 'Jul':6, 'Ags':7, 'Sep':8, 'Okt':9, 'Nov':10, 'Des':11};
-              let txMonth = monthMap[txMonthStr] || 0;
-
-              if(t.tipe === 'Pemasukan') masuk += t.nominal; else keluar += t.nominal; 
-
-              if(targetYear === 'semua' || txYear === targetYear) {
-                 if(t.tipe === 'Pemasukan') chartIn[txMonth] += t.nominal;
-                 else chartOut[txMonth] += t.nominal;
-              }
-            });
-            
-            resolve({ 
-              saldoTotal: masuk - keluar, 
-              pemasukan: targetYear === 'semua' ? masuk : masuk * 0.7, 
-              pengeluaran: targetYear === 'semua' ? keluar : keluar * 0.4, 
-              history: historyLimit,
-              insights: [
-                "Pengeluaran terbesar: Perbaikan Fasilitas (Rp 750.000)",
-                "Rasio saldo tersisa: 85% dari pemasukan."
-              ],
-              chart: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'],
-                dataIn: chartIn,
-                dataOut: chartOut
-              },
-              availableYears: Array.from(uniqueYears).sort((a,b) => b - a) 
-            });
-        }
-      }, 300); 
-    });
   }
 
   function togglePassword(inputId, iconId) {
@@ -685,14 +627,15 @@
     });
   }
 
-  function navTo(viewName) {
+  // Menambahkan parameter isSilent
+  function navTo(viewName, isSilent = false) {
     document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
     
     document.getElementById(`view-${viewName}`).classList.add('active');
     document.getElementById(`nav-${viewName}`).classList.add('active');
 
-    if(viewName === 'dashboard') loadDashboard();
+    if(viewName === 'dashboard') loadDashboard(isSilent);
     if(viewName === 'rekap') loadRekap();
     if(viewName === 'input') document.getElementById('input-tanggal').valueAsDate = new Date();
   }
@@ -703,14 +646,17 @@
 
     showLoader();
     const res = await callAPI('cekLogin', { password: pass });
-    hideLoader();
     
-    if(res.success) {
+    if(res && res.success) {
       document.getElementById('bottom-nav').classList.remove('hidden');
-      navTo('dashboard');
+      hideLoader(); // Langsung matikan loader saat login valid
+      navTo('dashboard', true); // Pindah ke dashboard dengan mode silent (tanpa loader tambahan)
       Swal.fire({ title: 'Berhasil', text: 'Selamat Datang!', icon: 'success', timer: 1500, showConfirmButton: false });
-    } else {
+    } else if(res) {
+      hideLoader();
       Swal.fire({ title: 'Gagal', text: res.message, icon: 'error' });
+    } else {
+      hideLoader();
     }
   }
 
@@ -721,8 +667,9 @@
     document.getElementById('view-login').classList.add('active');
   }
 
-  async function loadDashboard() {
-    showLoader();
+  // Menambahkan pengecekan isSilent
+  async function loadDashboard(isSilent = false) {
+    if(!isSilent) showLoader();
     
     let selectEl = document.getElementById('filter-period');
     let filterVal = selectEl && selectEl.value ? selectEl.value : new Date().getFullYear().toString();
@@ -731,7 +678,10 @@
     if(chartLabel) chartLabel.innerText = filterVal === 'semua' ? '(Semua Waktu)' : `(${filterVal})`;
 
     const res = await callAPI('getDashboardData', { filter: filterVal });
-    hideLoader();
+    
+    if(!isSilent) hideLoader();
+
+    if(!res) return;
 
     if(res.availableYears && selectEl) {
        let currentSelection = selectEl.value || filterVal;
@@ -790,6 +740,7 @@
     document.getElementById('dash-history').innerHTML = histHTML;
   }
 
+  // --- LOGIC UPLOAD GAMBAR ---
   let selectedFile = null;
 
   document.querySelectorAll('input[name="tipe"]').forEach(radio => {
@@ -894,16 +845,17 @@
     const res = await callAPI('simpanTransaksi', payload);
     hideLoader();
 
-    if(res.success) {
+    if(res && res.success) {
       Swal.fire({ title: 'Berhasil', text: res.message, icon: 'success' });
       document.getElementById('form-input').reset();
       document.getElementById('input-tanggal').valueAsDate = new Date();
       removeImage(new Event('click')); 
-    } else {
+    } else if (res) {
       Swal.fire({ title: 'Gagal', text: res.message, icon: 'error' });
     }
   }
 
+  // --- LOGIC REKAPITULASI DATA ---
   let allRekapData = [];
   let currentFilteredData = [];
 
@@ -917,12 +869,14 @@
     if(res) {
       allRekapData = res;
       
+      // Mengumpulkan semua Tahun dari data transaksi
       const years = new Set();
       res.forEach(tx => {
         const txYear = tx.tanggal.split(' ')[2];
         if (txYear) years.add(txYear);
       });
       
+      // Update Dropdown Tahun Otomatis
       let tahunOpts = '<option value="semua">Semua Tahun</option>';
       Array.from(years).sort((a,b) => b - a).forEach(y => {
         tahunOpts += `<option value="${y}">${y}</option>`;
@@ -934,7 +888,7 @@
         document.getElementById('filter-rekap-tahun').value = currentYearVal;
       }
 
-      filterRekap(); 
+      filterRekap(); // Memuat tabel sesuai filter
     }
   }
 
@@ -943,7 +897,7 @@
     const filterTahun = document.getElementById('filter-rekap-tahun').value;
     
     currentFilteredData = allRekapData.filter(tx => {
-      const parts = tx.tanggal.split(' '); 
+      const parts = tx.tanggal.split(' '); // ["12", "Jun", "2026"]
       if (parts.length !== 3) return true;
       
       const monthMap = {'Jan':'01', 'Feb':'02', 'Mar':'03', 'Apr':'04', 'May':'05', 'Mei':'05', 'Jun':'06', 'Jul':'07', 'Aug':'08', 'Ags':'08', 'Sep':'09', 'Oct':'10', 'Okt':'10', 'Nov':'11', 'Dec':'12', 'Des':'12'};
@@ -1069,7 +1023,6 @@
 
     const pdfBlobUrl = doc.output('bloburl');
     
-    // PERBAIKAN: Menampilkan preview PDF di dalam pop-up modal SweetAlert2
     Swal.fire({
       title: 'Preview Laporan PDF',
       html: `<iframe src="${pdfBlobUrl}#toolbar=0" class="w-full h-[50vh] md:h-[65vh] rounded-lg border border-gray-200 dark:border-gray-700 bg-white"></iframe>`,
@@ -1082,7 +1035,6 @@
       showCloseButton: true
     }).then((result) => {
       if (result.isConfirmed) {
-        // Jika tombol Download ditekan, file akan langsung tersimpan ke perangkat
         doc.save(`Rekap_Wali9_${new Date().getTime()}.pdf`);
       }
     });
@@ -1098,11 +1050,11 @@
     const res = await callAPI('ubahPassword', { passLama: lama, passBaru: baru });
     hideLoader();
 
-    if(res.success) {
+    if(res && res.success) {
       Swal.fire({ title: 'Berhasil', text: res.message, icon: 'success' });
       document.getElementById('set-pass-lama').value = '';
       document.getElementById('set-pass-baru').value = '';
-    } else {
+    } else if(res) {
       Swal.fire({ title: 'Gagal', text: res.message, icon: 'error' });
     }
   }
@@ -1116,12 +1068,12 @@
     const res = await callAPI('tambahTahun', { tahun: tahunBaru });
     hideLoader();
 
-    if(res.success) {
+    if(res && res.success) {
       Swal.fire({ title: 'Berhasil', text: res.message, icon: 'success' });
       document.getElementById('set-tahun-baru').value = '';
       
       document.getElementById('filter-period').innerHTML = ''; 
-    } else {
+    } else if(res) {
       Swal.fire({ title: 'Gagal', text: res.message, icon: 'error' });
     }
   }
