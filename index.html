@@ -14,6 +14,11 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- Tambahan Library untuk Export Excel & PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
@@ -393,13 +398,59 @@
       <div class="max-w-5xl mx-auto">
         <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-6">Rekapitulasi</h2>
         
-        <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden min-h-[400px]">
-          <div class="p-5 bg-gray-50 dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center">
-            <span class="font-semibold text-gray-600 dark:text-gray-300 text-sm md:text-base">Riwayat Lengkap Transaksi</span>
-            <button onclick="loadRekap()" class="text-emerald-500 hover:rotate-180 transition duration-500 w-8 h-8 flex items-center justify-center rounded-full hover:bg-emerald-50 dark:hover:bg-emerald-500/10"><i class="fa-solid fa-rotate-right"></i></button>
+        <!-- Filter & Aksi Export -->
+        <div class="bg-white dark:bg-gray-800 p-4 md:p-5 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 mb-6 flex flex-col md:flex-row gap-4 justify-between items-center">
+          <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+            <select id="filter-rekap-bulan" onchange="filterRekap()" class="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-white rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+              <option value="semua">Semua Bulan</option>
+              <option value="01">Januari</option>
+              <option value="02">Februari</option>
+              <option value="03">Maret</option>
+              <option value="04">April</option>
+              <option value="05">Mei</option>
+              <option value="06">Juni</option>
+              <option value="07">Juli</option>
+              <option value="08">Agustus</option>
+              <option value="09">September</option>
+              <option value="10">Oktober</option>
+              <option value="11">November</option>
+              <option value="12">Desember</option>
+            </select>
+            <select id="filter-rekap-tahun" onchange="filterRekap()" class="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-white rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+              <option value="semua">Semua Tahun</option>
+              <!-- Injected via JS -->
+            </select>
           </div>
-          <div id="rekap-list" class="divide-y divide-gray-100 dark:divide-gray-800">
-            <!-- Injected via JS -->
+          <div class="flex gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
+            <button onclick="exportExcel()" class="flex-1 md:flex-none bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 hover:bg-emerald-100 dark:hover:bg-emerald-500/20 transition px-4 py-2.5 rounded-xl font-semibold text-sm whitespace-nowrap">
+              <i class="fa-solid fa-file-excel mr-1"></i> Excel
+            </button>
+            <button onclick="exportPDF()" class="flex-1 md:flex-none bg-red-50 dark:bg-red-500/10 text-red-600 hover:bg-red-100 dark:hover:bg-red-500/20 transition px-4 py-2.5 rounded-xl font-semibold text-sm whitespace-nowrap">
+              <i class="fa-solid fa-file-pdf mr-1"></i> PDF
+            </button>
+            <button onclick="loadRekap()" class="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition px-4 py-2.5 rounded-xl font-semibold text-sm">
+              <i class="fa-solid fa-rotate-right"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Tabel Data -->
+        <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden min-h-[400px]">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm text-gray-600 dark:text-gray-300">
+              <thead class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 uppercase font-semibold text-xs border-b border-gray-100 dark:border-gray-800">
+                <tr>
+                  <th class="px-5 py-4 whitespace-nowrap">Tanggal</th>
+                  <th class="px-5 py-4 min-w-[200px]">Keterangan</th>
+                  <th class="px-5 py-4 text-center">Tipe</th>
+                  <th class="px-5 py-4 text-right whitespace-nowrap">Nominal</th>
+                  <th class="px-5 py-4 text-center">Bukti</th>
+                </tr>
+              </thead>
+              <tbody id="rekap-list" class="divide-y divide-gray-100 dark:divide-gray-800">
+                <!-- Injected via JS -->
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -459,7 +510,7 @@
         
         <div class="text-center mt-10 opacity-50 pb-8">
           <p class="text-xs md:text-sm font-medium dark:text-white">Aplikasi Wali 9 P2S Abu Zairi</p>
-          <p class="text-[10px] md:text-xs dark:text-gray-300">Versi 1.5 • Dark Mode Fixed</p>
+          <p class="text-[10px] md:text-xs dark:text-gray-300">Versi 1.6 • Bug fixes</p>
         </div>
       </div>
     </div>
@@ -742,6 +793,8 @@
     document.getElementById('dash-history').innerHTML = histHTML;
   }
 
+  // --- FUNGSI UPLOAD GAMBAR DAN INPUT TRANSAKSI YANG DIPERBAIKI ---
+  
   let selectedFile = null;
 
   document.querySelectorAll('input[name="tipe"]').forEach(radio => {
@@ -751,7 +804,7 @@
         container.classList.remove('hidden');
       } else {
         container.classList.add('hidden');
-        removeImage(new Event('click')); 
+        removeImage(new Event('click')); // Reset foto jika kembali ke pemasukan
       }
     });
   });
@@ -804,12 +857,9 @@
       showLoader();
       document.querySelector('#loader p').innerText = "Mengunggah foto...";
       
-      // ⚠️ GANTI TEKS DI BAWAH INI DENGAN API KEY ANDA DARI API.IMGBB.COM
-      const IMGBB_API_KEY = "d9e6199d92abbae9ddea7cbca2361bc3"; 
-      
+      const IMGBB_API_KEY = "69e71ddab1f5a50785f7823f66c0500a"; 
       const formData = new FormData();
       
-      // PERBAIKAN: Gunakan data base64 dari preview gambar agar lebih stabil saat upload via API
       const base64Image = document.getElementById('img-preview').src.split(',')[1];
       formData.append('image', base64Image);
 
@@ -823,10 +873,7 @@
         if (dataImg.success) {
           buktiLink = dataImg.data.url;
         } else {
-          // Menampilkan detail error asli dari server ImgBB
           let errorMsg = dataImg.error ? dataImg.error.message : "Gagal mendapatkan respon dari server.";
-          
-          // Tangkap error API Key secara spesifik
           if (errorMsg.toLowerCase().includes("invalid api")) {
             errorMsg = "Wajib masukkan API Key milik Anda! Daftar gratis di api.imgbb.com lalu ubah kode IMGBB_API_KEY di file HTML.";
           }
@@ -861,6 +908,10 @@
       Swal.fire({ title: 'Gagal', text: res.message, icon: 'error' });
     }
   }
+  // --- AKHIR BLOK FUNGSI UPLOAD GAMBAR ---
+
+  let allRekapData = [];
+  let currentFilteredData = [];
 
   async function loadRekap() {
     showLoader();
@@ -869,29 +920,130 @@
     const res = await callAPI('getRekapData');
     hideLoader();
 
-    let html = '';
-    if(!res || res.length === 0) html = '<div class="p-10 text-center text-gray-400 dark:text-gray-600"><i class="fa-regular fa-folder-open text-5xl mb-4 opacity-50"></i><p class="text-base">Data masih kosong</p></div>';
+    if(res) {
+      allRekapData = res;
+      
+      // Mengumpulkan semua Tahun dari data transaksi
+      const years = new Set();
+      res.forEach(tx => {
+        const txYear = tx.tanggal.split(' ')[2];
+        if (txYear) years.add(txYear);
+      });
+      
+      // Update Dropdown Tahun Otomatis
+      let tahunOpts = '<option value="semua">Semua Tahun</option>';
+      Array.from(years).sort((a,b) => b - a).forEach(y => {
+        tahunOpts += `<option value="${y}">${y}</option>`;
+      });
+      
+      const currentYearVal = document.getElementById('filter-rekap-tahun').value;
+      document.getElementById('filter-rekap-tahun').innerHTML = tahunOpts;
+      if(Array.from(years).includes(currentYearVal)) {
+        document.getElementById('filter-rekap-tahun').value = currentYearVal;
+      }
+
+      filterRekap(); // Memuat tabel sesuai filter
+    }
+  }
+
+  function filterRekap() {
+    const filterBulan = document.getElementById('filter-rekap-bulan').value;
+    const filterTahun = document.getElementById('filter-rekap-tahun').value;
     
-    res.forEach(tx => {
-      const isMin = tx.tipe === 'Pengeluaran';
-      html += `
-        <div class="p-5 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700/50 transition">
-          <div>
-            <p class="font-bold text-sm md:text-base text-gray-800 dark:text-gray-100">${tx.keterangan}</p>
-            <div class="flex space-x-2 text-xs md:text-sm text-gray-500 dark:text-gray-400 mt-1.5 items-center">
-              <span><i class="fa-regular fa-calendar mr-1"></i>${tx.tanggal}</span>
-              <span class="text-gray-300 dark:text-gray-600">•</span>
-              <span class="${isMin ? 'text-red-500' : 'text-emerald-500'} font-medium bg-${isMin?'red':'emerald'}-50 dark:bg-${isMin?'red':'emerald'}-500/10 px-2 py-0.5 rounded-md">${tx.tipe}</span>
-            </div>
-            ${tx.bukti ? `<a href="${tx.bukti}" target="_blank" class="mt-2 inline-flex items-center text-[10px] md:text-xs font-semibold text-blue-500 hover:text-blue-600 bg-blue-50 dark:bg-blue-500/10 px-2 py-1 rounded-md transition"><i class="fa-solid fa-image mr-1"></i> Lihat Bukti</a>` : ''}
-          </div>
-          <div class="font-bold text-sm md:text-base ${isMin ? 'text-red-500' : 'text-emerald-500'}">
-            ${isMin ? '-' : '+'}${formatRupiah(tx.nominal)}
-          </div>
-        </div>
-      `;
+    currentFilteredData = allRekapData.filter(tx => {
+      const parts = tx.tanggal.split(' '); // ["12", "Jun", "2026"]
+      if (parts.length !== 3) return true;
+      
+      const monthMap = {'Jan':'01', 'Feb':'02', 'Mar':'03', 'Apr':'04', 'May':'05', 'Mei':'05', 'Jun':'06', 'Jul':'07', 'Aug':'08', 'Ags':'08', 'Sep':'09', 'Oct':'10', 'Okt':'10', 'Nov':'11', 'Dec':'12', 'Des':'12'};
+      const txMonth = monthMap[parts[1]] || '00';
+      const txYear = parts[2];
+
+      let matchBulan = (filterBulan === 'semua' || txMonth === filterBulan);
+      let matchTahun = (filterTahun === 'semua' || txYear === filterTahun);
+
+      return matchBulan && matchTahun;
     });
+
+    renderRekapTable(currentFilteredData);
+  }
+
+  function renderRekapTable(data) {
+    let html = '';
+    if(data.length === 0) {
+      html = '<tr><td colspan="5" class="p-10 text-center text-gray-400 dark:text-gray-500"><i class="fa-regular fa-folder-open text-4xl mb-3 opacity-50 block"></i>Data tidak ditemukan</td></tr>';
+    } else {
+      data.forEach(tx => {
+        const isMin = tx.tipe === 'Pengeluaran';
+        html += `
+          <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition group">
+            <td class="px-5 py-4 whitespace-nowrap text-gray-800 dark:text-gray-200">${tx.tanggal}</td>
+            <td class="px-5 py-4 font-medium text-gray-800 dark:text-gray-100">${tx.keterangan}</td>
+            <td class="px-5 py-4 text-center whitespace-nowrap">
+              <span class="${isMin ? 'text-red-500 bg-red-50 dark:bg-red-500/10' : 'text-emerald-500 bg-emerald-50 dark:bg-emerald-500/10'} px-2.5 py-1 rounded-md text-[11px] uppercase tracking-wide font-bold">
+                ${tx.tipe}
+              </span>
+            </td>
+            <td class="px-5 py-4 text-right font-bold whitespace-nowrap ${isMin ? 'text-red-500' : 'text-emerald-500'}">
+              ${isMin ? '-' : '+'}${formatRupiah(tx.nominal)}
+            </td>
+            <td class="px-5 py-4 text-center">
+              ${tx.bukti ? `<a href="${tx.bukti}" target="_blank" class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-500/10 text-blue-500 hover:bg-blue-500 hover:text-white transition" title="Lihat Bukti"><i class="fa-solid fa-image"></i></a>` : '<span class="text-gray-300 dark:text-gray-600">-</span>'}
+            </td>
+          </tr>
+        `;
+      });
+    }
     document.getElementById('rekap-list').innerHTML = html;
+  }
+
+  function exportExcel() {
+    if(!currentFilteredData || currentFilteredData.length === 0) return Swal.fire('Info', 'Tidak ada data untuk diexport', 'info');
+    
+    let exportData = currentFilteredData.map((tx, idx) => ({
+      'No': idx + 1,
+      'Tanggal': tx.tanggal,
+      'Keterangan': tx.keterangan,
+      'Tipe': tx.tipe,
+      'Nominal (Rp)': tx.nominal,
+      'Link Bukti': tx.bukti || 'Tidak ada'
+    }));
+
+    const ws = XLSX.utils.json_to_sheet(exportData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Rekap Transaksi");
+    XLSX.writeFile(wb, `Rekap_Wali9_${new Date().getTime()}.xlsx`);
+  }
+
+  function exportPDF() {
+    if(!currentFilteredData || currentFilteredData.length === 0) return Swal.fire('Info', 'Tidak ada data untuk diexport', 'info');
+    
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    
+    doc.setFontSize(16);
+    doc.text("Rekapitulasi Keuangan Wali 9 P2S", 14, 20);
+    doc.setFontSize(10);
+    doc.setTextColor(100);
+    doc.text(`Dicetak pada: ${new Date().toLocaleString('id-ID')}`, 14, 28);
+
+    const bodyData = currentFilteredData.map((tx, idx) => [
+      idx + 1,
+      tx.tanggal,
+      tx.keterangan,
+      tx.tipe,
+      (tx.tipe === 'Pengeluaran' ? '-' : '+') + tx.nominal.toLocaleString('id-ID'),
+      tx.bukti ? 'Terlampir' : '-'
+    ]);
+
+    doc.autoTable({
+      startY: 35,
+      head: [['No', 'Tanggal', 'Keterangan', 'Tipe', 'Nominal (Rp)', 'Bukti']],
+      body: bodyData,
+      theme: 'grid',
+      headStyles: { fillColor: [16, 185, 129] } // Warna Emerald
+    });
+
+    doc.save(`Rekap_Wali9_${new Date().getTime()}.pdf`);
   }
 
   async function submitUbahPassword() {
