@@ -264,7 +264,6 @@
           <button onclick="doLogin()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-3 rounded-xl transition shadow-md hover:shadow-lg">
             Masuk <i class="fa-solid fa-arrow-right ml-2"></i>
           </button>
-          <p class="text-xs text-center text-gray-400 dark:text-gray-500 mt-4">Ketik apa saja untuk masuk mode Preview</p>
         </div>
       </div>
     </div>
@@ -380,6 +379,22 @@
               </div>
             </div>
             
+            <!-- TAMBAHAN: Upload Bukti (Hanya untuk Pengeluaran) -->
+            <div id="container-bukti" class="mb-5 hidden">
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-300 mb-2">Bukti Foto (Opsional)</label>
+              <div class="relative border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-4 text-center hover:bg-gray-50 dark:hover:bg-gray-800 transition cursor-pointer" onclick="document.getElementById('input-bukti').click()">
+                <input type="file" id="input-bukti" accept="image/*" class="hidden" onchange="previewImage(event)">
+                <div id="preview-container" class="hidden flex flex-col items-center">
+                  <img id="img-preview" class="h-24 object-cover rounded-lg mb-2 shadow-sm">
+                  <span class="text-xs text-red-500 font-medium z-10 p-1" onclick="removeImage(event)">Hapus Foto</span>
+                </div>
+                <div id="upload-placeholder" class="text-gray-400 dark:text-gray-500">
+                  <i class="fa-solid fa-cloud-arrow-up text-3xl mb-2"></i>
+                  <p class="text-xs font-medium">Klik untuk upload foto nota/barang</p>
+                </div>
+              </div>
+            </div>
+
             <div class="mb-5">
               <label class="block text-sm font-semibold text-gray-600 dark:text-gray-300 mb-2">Tanggal</label>
               <input type="date" id="input-tanggal" required class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 [color-scheme:light] dark:[color-scheme:dark]">
@@ -533,10 +548,10 @@
 
   // --- DUMMY DATA ---
   let dummyStorage = [
-    {id: 'TX-1', tanggal: '12 Jun 2026', tipe: 'Pemasukan', nominal: 2500000, keterangan: 'Saldo Awal Bulan'},
-    {id: 'TX-2', tanggal: '13 Jun 2026', tipe: 'Pengeluaran', nominal: 150000, keterangan: 'Beli Kebutuhan ATK'},
-    {id: 'TX-3', tanggal: '05 Jan 2026', tipe: 'Pemasukan', nominal: 5000000, keterangan: 'Sumbangan Donatur'},
-    {id: 'TX-4', tanggal: '20 Mar 2026', tipe: 'Pengeluaran', nominal: 750000, keterangan: 'Perbaikan Fasilitas'},
+    {id: 'TX-1', tanggal: '12 Jun 2026', tipe: 'Pemasukan', nominal: 2500000, keterangan: 'Saldo Awal Bulan', bukti: ''},
+    {id: 'TX-2', tanggal: '13 Jun 2026', tipe: 'Pengeluaran', nominal: 150000, keterangan: 'Beli Kebutuhan ATK', bukti: 'https://i.ibb.co/6yq7hW7/placeholder.png'},
+    {id: 'TX-3', tanggal: '05 Jan 2026', tipe: 'Pemasukan', nominal: 5000000, keterangan: 'Sumbangan Donatur', bukti: ''},
+    {id: 'TX-4', tanggal: '20 Mar 2026', tipe: 'Pengeluaran', nominal: 750000, keterangan: 'Perbaikan Fasilitas', bukti: ''},
   ];
   let dummyTahun = []; // Dikosongkan agar murni mendeteksi dari database transaksi
 
@@ -559,7 +574,7 @@
         if(action === 'cekLogin') resolve({success: true});
         if(action === 'simpanTransaksi') {
             const dateStr = new Date(payload.tanggal).toLocaleDateString('id-ID', {day: '2-digit', month: 'short', year: 'numeric'});
-            dummyStorage.unshift({ id: 'TX-'+Date.now(), tanggal: dateStr, tipe: payload.tipe, nominal: parseFloat(payload.nominal), keterangan: payload.keterangan });
+            dummyStorage.unshift({ id: 'TX-'+Date.now(), tanggal: dateStr, tipe: payload.tipe, nominal: parseFloat(payload.nominal), keterangan: payload.keterangan, bukti: payload.bukti || '' });
             resolve({success: true, message: 'Data Dummy berhasil disimpan!'});
         }
         if(action === 'getRekapData') resolve(dummyStorage);
@@ -766,6 +781,7 @@
             <div>
               <p class="text-sm md:text-base font-bold text-gray-800 dark:text-gray-100">${tx.keterangan}</p>
               <p class="text-xs md:text-sm text-gray-400 dark:text-gray-500 mt-0.5">${tx.tanggal}</p>
+              ${tx.bukti ? `<a href="${tx.bukti}" target="_blank" class="text-[10px] md:text-xs text-blue-500 hover:underline mt-1 inline-block"><i class="fa-solid fa-link"></i> Lihat Bukti</a>` : ''}
             </div>
           </div>
           <span class="font-bold text-sm md:text-base ${isMin ? 'text-red-500' : 'text-emerald-500'}">
@@ -776,19 +792,95 @@
     document.getElementById('dash-history').innerHTML = histHTML;
   }
 
-  async function submitTransaksi() {
-    const payload = {
-      tipe: document.querySelector('input[name="tipe"]:checked').value,
-      tanggal: document.getElementById('input-tanggal').value,
-      nominal: document.getElementById('input-nominal').value,
-      keterangan: document.getElementById('input-keterangan').value
-    };
+  // --- LOGIC UPLOAD FOTO & PREVIEW ---
+  let selectedFile = null;
 
-    if(!payload.tanggal || !payload.nominal || !payload.keterangan) {
+  document.querySelectorAll('input[name="tipe"]').forEach(radio => {
+    radio.addEventListener('change', (e) => {
+      const container = document.getElementById('container-bukti');
+      if (e.target.value === 'Pengeluaran') {
+        container.classList.remove('hidden');
+      } else {
+        container.classList.add('hidden');
+        removeImage(new Event('click')); // Reset foto jika kembali ke pemasukan
+      }
+    });
+  });
+
+  function previewImage(event) {
+    const file = event.target.files[0];
+    if(file) {
+      selectedFile = file;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById('img-preview').src = e.target.result;
+        document.getElementById('preview-container').classList.remove('hidden');
+        document.getElementById('upload-placeholder').classList.add('hidden');
+      }
+      reader.readAsDataURL(file);
+    }
+  }
+
+  function removeImage(event) {
+    event.stopPropagation();
+    selectedFile = null;
+    const input = document.getElementById('input-bukti');
+    if(input) input.value = '';
+    document.getElementById('preview-container').classList.add('hidden');
+    document.getElementById('upload-placeholder').classList.remove('hidden');
+  }
+
+  async function submitTransaksi() {
+    const tipe = document.querySelector('input[name="tipe"]:checked').value;
+    const tanggal = document.getElementById('input-tanggal').value;
+    const nominal = document.getElementById('input-nominal').value;
+    const keterangan = document.getElementById('input-keterangan').value;
+
+    if(!tanggal || !nominal || !keterangan) {
       return Swal.fire({ title: 'Peringatan', text: 'Lengkapi semua field', icon: 'warning' });
     }
 
-    showLoader();
+    let buktiLink = "";
+
+    // Proses upload foto ke ImgBB terlebih dahulu jika ada
+    if (tipe === 'Pengeluaran' && selectedFile) {
+      showLoader();
+      document.querySelector('#loader p').innerText = "Mengunggah foto...";
+      
+      // API Key Gratis ImgBB (Opsional: Daftar di api.imgbb.com dan ganti dengan milik Anda)
+      const IMGBB_API_KEY = "69e71ddab1f5a50785f7823f66c0500a"; 
+      const formData = new FormData();
+      formData.append('image', selectedFile);
+
+      try {
+        const resImg = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+          method: 'POST',
+          body: formData
+        });
+        const dataImg = await resImg.json();
+        
+        if (dataImg.success) {
+          buktiLink = dataImg.data.url;
+        } else {
+          throw new Error("Gagal mengunggah foto ke server.");
+        }
+      } catch (error) {
+        hideLoader();
+        return Swal.fire({ title: 'Upload Gagal', text: 'Tidak dapat mengunggah bukti foto. ' + error.message, icon: 'error' });
+      }
+      document.querySelector('#loader p').innerText = "Menyimpan data...";
+    } else if (!selectedFile) {
+       showLoader();
+    }
+
+    const payload = {
+      tipe: tipe,
+      tanggal: tanggal,
+      nominal: nominal,
+      keterangan: keterangan,
+      bukti: buktiLink
+    };
+
     const res = await callAPI('simpanTransaksi', payload);
     hideLoader();
 
@@ -796,6 +888,7 @@
       Swal.fire({ title: 'Berhasil', text: res.message, icon: 'success' });
       document.getElementById('form-input').reset();
       document.getElementById('input-tanggal').valueAsDate = new Date();
+      removeImage(new Event('click')); // Kosongkan file input preview
     } else {
       Swal.fire({ title: 'Gagal', text: res.message, icon: 'error' });
     }
@@ -822,6 +915,7 @@
               <span class="text-gray-300 dark:text-gray-600">•</span>
               <span class="${isMin ? 'text-red-500' : 'text-emerald-500'} font-medium bg-${isMin?'red':'emerald'}-50 dark:bg-${isMin?'red':'emerald'}-500/10 px-2 py-0.5 rounded-md">${tx.tipe}</span>
             </div>
+            ${tx.bukti ? `<a href="${tx.bukti}" target="_blank" class="mt-2 inline-flex items-center text-[10px] md:text-xs font-semibold text-blue-500 hover:text-blue-600 bg-blue-50 dark:bg-blue-500/10 px-2 py-1 rounded-md transition"><i class="fa-solid fa-image mr-1"></i> Lihat Bukti</a>` : ''}
           </div>
           <div class="font-bold text-sm md:text-base ${isMin ? 'text-red-500' : 'text-emerald-500'}">
             ${isMin ? '-' : '+'}${formatRupiah(tx.nominal)}
