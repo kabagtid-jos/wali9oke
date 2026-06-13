@@ -806,7 +806,10 @@
       
       const IMGBB_API_KEY = "69e71ddab1f5a50785f7823f66c0500a"; 
       const formData = new FormData();
-      formData.append('image', selectedFile);
+      
+      // PERBAIKAN: Gunakan data base64 dari preview gambar agar lebih stabil saat upload via API
+      const base64Image = document.getElementById('img-preview').src.split(',')[1];
+      formData.append('image', base64Image);
 
       try {
         const resImg = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
@@ -818,11 +821,12 @@
         if (dataImg.success) {
           buktiLink = dataImg.data.url;
         } else {
-          throw new Error("Gagal mengunggah foto ke server.");
+          // PERBAIKAN: Menampilkan detail error asli dari server ImgBB
+          throw new Error(dataImg.error ? dataImg.error.message : "Gagal mendapatkan respon dari server.");
         }
       } catch (error) {
         hideLoader();
-        return Swal.fire({ title: 'Upload Gagal', text: 'Tidak dapat mengunggah bukti foto. ' + error.message, icon: 'error' });
+        return Swal.fire({ title: 'Upload Gagal', text: error.message, icon: 'error' });
       }
       document.querySelector('#loader p').innerText = "Menyimpan data...";
     } else if (!selectedFile) {
