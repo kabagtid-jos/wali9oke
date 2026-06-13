@@ -5,9 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Wali 9 P2S Abu Zairi</title>
   
-  <!-- Tailwind CSS & FontAwesome -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Konfigurasi Tailwind untuk Dark Mode -->
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -15,7 +13,6 @@
   </script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
@@ -24,10 +21,8 @@
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
       -webkit-tap-highlight-color: transparent;
-      transition: background-color 0.3s ease, color 0.3s ease;
     }
 
-    /* Mobile & Desktop Wrapper */
     .app-container {
       width: 100%;
       margin: 0 auto;
@@ -36,10 +31,8 @@
       overflow-x: hidden;
       display: flex;
       flex-direction: column;
-      transition: background-color 0.3s ease;
     }
 
-    /* Page Transitions */
     .page {
       display: none;
       padding-bottom: 100px;
@@ -54,13 +47,11 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Custom Glass Effect */
     .glass {
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
     }
 
-    /* --- NAVIGATION BAR --- */
     .bottom-nav {
       position: fixed;
       bottom: 0;
@@ -89,7 +80,6 @@
     .nav-item.active { color: #10b981 !important; }
     .nav-item.active i { transform: translateY(-4px); color: #10b981 !important;}
 
-    /* --- DESKTOP LAYOUT (TOP BAR) --- */
     @media (min-width: 768px) {
       .bottom-nav {
         top: 0;
@@ -131,7 +121,6 @@
       .page { padding-bottom: 2rem; }
     }
     
-    /* Loader overlay */
     #loader {
       display: none;
       position: fixed; top: 0; left: 0; right: 0; bottom: 0;
@@ -151,7 +140,6 @@
     }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-    /* --- SWEETALERT2 CUSTOM PROPORTIONAL SIZING --- */
     .swal2-popup {
       width: 280px !important;
       padding: 1.25rem 1rem !important;
@@ -162,16 +150,16 @@
       .swal2-popup { width: 340px !important; }
     }
     .swal2-icon {
-      transform: scale(0.65) !important; /* Mengecilkan ikon bawaan yang terlalu besar */
+      transform: scale(0.65) !important; 
       margin: 0.5rem auto 0 auto !important;
     }
     .swal2-title {
-      font-size: 1.125rem !important; /* text-lg */
+      font-size: 1.125rem !important; 
       margin-bottom: 0.25rem !important;
       padding: 0 !important;
     }
     .swal2-html-container {
-      font-size: 0.875rem !important; /* text-sm */
+      font-size: 0.875rem !important; 
       margin: 0 !important;
     }
     .swal2-actions {
@@ -181,38 +169,34 @@
       padding: 0.5rem 1.5rem !important;
       font-size: 0.875rem !important;
       font-weight: 600 !important;
-      border-radius: 0.75rem !important; /* rounded-xl */
+      border-radius: 0.75rem !important; 
     }
     
-    /* Dark Mode Override Khusus SweetAlert */
     html.dark .swal2-popup {
-      background-color: #1f2937 !important; /* gray-800 */
-      color: #f9fafb !important; /* gray-50 */
-      border: 1px solid #374151 !important; /* border-gray-700 */
+      background-color: #1f2937 !important; 
+      color: #f9fafb !important; 
+      border: 1px solid #374151 !important; 
     }
     html.dark .swal2-title, html.dark .swal2-html-container {
-      color: #e5e7eb !important; /* gray-200 */
+      color: #e5e7eb !important; 
     }
 
-    /* PERBAIKAN: Memastikan Modal selalu di atas Loader */
     .swal2-container {
       z-index: 10000 !important;
     }
   </style>
 </head>
-<body class="antialiased text-gray-800">
+<body class="antialiased text-gray-800 bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
 
 <div class="app-container">
   
-  <!-- Loader overlay -->
   <div id="loader">
     <div class="spinner mb-3"></div>
     <p class="text-sm text-gray-600 dark:text-gray-300 font-medium tracking-wide">Memproses...</p>
   </div>
 
-  <!-- NAVIGATION BAR (BOTTOM ON MOBILE, TOP ON DESKTOP) -->
-  <nav id="bottom-nav" class="bottom-nav glass hidden">
-    <!-- Desktop Brand Logo -->
+  <!-- NAVIGATION BAR -->
+  <nav id="bottom-nav" class="bottom-nav glass hidden bg-white/80 dark:bg-gray-900/80 border-t border-gray-100 dark:border-gray-800">
     <div class="hidden md:flex items-center mr-auto cursor-pointer">
        <div class="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center text-white text-sm shadow-sm mr-3">
          <i class="fa-solid fa-mosque"></i>
@@ -241,9 +225,7 @@
   </nav>
 
   <div class="w-full">
-    
-    <!-- LOGIN PAGE -->
-    <div id="view-login" class="page active relative z-[100] bg-gray-50 dark:bg-gray-900 !pb-0">
+    <div id="view-login" class="page active relative z-[100] !pb-0">
       <div class="flex flex-col items-center justify-center px-6 min-h-screen w-full">
         <div class="w-16 h-16 bg-emerald-500 rounded-2xl flex items-center justify-center text-white text-3xl shadow-lg mb-6">
           <i class="fa-solid fa-mosque"></i>
@@ -268,9 +250,7 @@
       </div>
     </div>
 
-    <!-- DASHBOARD PAGE -->
     <div id="view-dashboard" class="page">
-      <!-- PERBAIKAN: Membungkus banner dengan max-w-6xl dan px yang SAMA PERSIS dengan Card -->
       <div class="max-w-6xl mx-auto px-6 md:px-10">
         <div class="bg-emerald-500 rounded-b-[2rem] md:rounded-3xl w-full md:mt-6 pb-14 shadow-md transition-all">
           <div class="p-6 md:py-8 md:px-10 text-white">
@@ -280,7 +260,6 @@
                 <h1 class="text-xl md:text-2xl font-bold">Admin Wali 9</h1>
               </div>
               <div class="flex space-x-3">
-                <!-- Tombol Tema (Quick Toggle) -->
                 <div onclick="toggleTheme()" class="w-10 h-10 md:w-12 md:h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm shadow-sm hover:bg-white/30 transition cursor-pointer">
                   <i id="header-theme-icon" class="fa-solid fa-moon md:text-lg"></i>
                 </div>
@@ -291,7 +270,6 @@
                 <p class="text-sm opacity-90 mb-1 text-emerald-50">Total Saldo Kas</p>
                 <h1 class="text-4xl md:text-5xl font-bold tracking-tight" id="dash-saldo">Rp 0</h1>
               </div>
-              <!-- Dropdown Tahun -->
               <select id="filter-period" onchange="loadDashboard()" class="bg-white/20 text-white text-xs md:text-sm rounded-lg px-2 py-1.5 md:px-3 md:py-2 backdrop-blur-sm border border-white/30 focus:outline-none cursor-pointer">
                 <!-- Injected via JS -->
               </select>
@@ -301,7 +279,6 @@
       </div>
 
       <div class="max-w-6xl mx-auto">
-        <!-- Posisi Cards Summary (Pemasukan/Pengeluaran) -->
         <div class="px-6 md:px-10 -mt-10 relative z-10 grid grid-cols-2 gap-4 md:gap-8">
           <div class="bg-white dark:bg-gray-800 p-4 md:p-6 rounded-2xl shadow-md border border-gray-50 dark:border-gray-700 flex flex-col md:flex-row md:items-center space-y-3 md:space-y-0 md:space-x-4 hover:shadow-lg transition">
             <div class="w-10 h-10 md:w-14 md:h-14 rounded-full bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center text-emerald-500">
@@ -323,9 +300,7 @@
           </div>
         </div>
 
-        <!-- Insight & Chart Row -->
         <div class="px-6 md:px-10 mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
-          <!-- Insights Card -->
           <div class="bg-white dark:bg-gray-800 p-5 md:p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition">
             <h3 class="font-bold text-gray-800 dark:text-white mb-3 flex items-center"><i class="fa-solid fa-lightbulb text-amber-400 mr-2"></i> Insight Data</h3>
             <ul id="dash-insights" class="space-y-3 text-sm text-gray-600 dark:text-gray-300">
@@ -333,7 +308,6 @@
             </ul>
           </div>
 
-          <!-- Chart Card -->
           <div class="bg-white dark:bg-gray-800 p-5 md:p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition">
              <h3 class="font-bold text-gray-800 dark:text-white mb-4 flex items-center"><i class="fa-solid fa-chart-line text-emerald-500 mr-2"></i> Arus Kas <span id="chart-tahun-label" class="ml-1 text-gray-500 font-medium"></span></h3>
              <div class="relative h-40 w-full">
@@ -342,7 +316,6 @@
           </div>
         </div>
 
-        <!-- Recent Transactions -->
         <div class="px-6 md:px-10 mt-6 md:mt-10">
           <div class="flex justify-between items-end mb-4">
             <h3 class="font-bold text-gray-800 dark:text-white md:text-lg">Transaksi Terakhir</h3>
@@ -355,7 +328,6 @@
       </div>
     </div>
 
-    <!-- INPUT PAGE -->
     <div id="view-input" class="page px-6 md:px-10 pt-6">
       <div class="max-w-3xl mx-auto">
         <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-6">Input Transaksi</h2>
@@ -379,7 +351,6 @@
               </div>
             </div>
             
-            <!-- TAMBAHAN: Upload Bukti (Hanya untuk Pengeluaran) -->
             <div id="container-bukti" class="mb-5 hidden">
               <label class="block text-sm font-semibold text-gray-600 dark:text-gray-300 mb-2">Bukti Foto (Opsional)</label>
               <div class="relative border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-4 text-center hover:bg-gray-50 dark:hover:bg-gray-800 transition cursor-pointer" onclick="document.getElementById('input-bukti').click()">
@@ -418,7 +389,6 @@
       </div>
     </div>
 
-    <!-- REKAP PAGE -->
     <div id="view-rekap" class="page px-6 md:px-10 pt-6">
       <div class="max-w-5xl mx-auto">
         <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-6">Rekapitulasi</h2>
@@ -435,12 +405,10 @@
       </div>
     </div>
 
-    <!-- SETTING PAGE -->
     <div id="view-setting" class="page px-6 md:px-10 pt-6">
       <div class="max-w-3xl mx-auto">
         <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-6">Pengaturan</h2>
         
-        <!-- Tambah Tahun Input -->
         <div class="bg-white dark:bg-gray-800 p-6 md:p-8 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
           <h3 class="font-bold text-gray-700 dark:text-gray-200 mb-4 border-b border-gray-100 dark:border-gray-700 pb-3 flex items-center">
             <i class="fa-solid fa-calendar-plus mr-2 text-emerald-500"></i> Kelola Tahun Data
@@ -456,7 +424,6 @@
           </div>
         </div>
 
-        <!-- Akun Keamanan -->
         <div class="bg-white dark:bg-gray-800 p-6 md:p-8 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
           <h3 class="font-bold text-gray-700 dark:text-gray-200 mb-5 border-b border-gray-100 dark:border-gray-700 pb-3"><i class="fa-solid fa-lock mr-2 text-emerald-500"></i> Ubah Password</h3>
           <div class="space-y-4 md:space-y-5">
@@ -492,25 +459,21 @@
         
         <div class="text-center mt-10 opacity-50 pb-8">
           <p class="text-xs md:text-sm font-medium dark:text-white">Aplikasi Wali 9 P2S Abu Zairi</p>
-          <p class="text-[10px] md:text-xs dark:text-gray-300">Versi 1.4 • Dark Mode & Layout Refined</p>
+          <p class="text-[10px] md:text-xs dark:text-gray-300">Versi 1.5 • Dark Mode Fixed</p>
         </div>
       </div>
     </div>
 
-  </div> <!-- End Pages Area -->
-</div> <!-- End App Shell -->
+  </div>
+</div>
 
 <script>
-  // ==========================================================
-  // KONFIGURASI API & THEME
-  // ==========================================================
   const API_URL = "https://script.google.com/macros/s/AKfycbwIQ_jy1OPTTrrwQvA9nyT7-AylRfBm7Rh154wdP7Z77mzdMCOesHJzz97NZksyupPh/exec"; 
 
   const formatRupiah = (angka) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
   const showLoader = () => document.getElementById('loader').style.display = 'flex';
   const hideLoader = () => document.getElementById('loader').style.display = 'none';
 
-  // --- DARK MODE LOGIC ---
   let isDarkMode = false;
   
   function initTheme() {
@@ -528,32 +491,27 @@
     isDarkMode = document.documentElement.classList.contains('dark');
     localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
     updateThemeUI();
-    // Jika chart sudah ada, render ulang agar warna teks sesuai tema
     if (window.currentChartData) {
       renderChart(window.currentChartData.labels, window.currentChartData.dataIn, window.currentChartData.dataOut);
     }
   }
 
   function updateThemeUI() {
-    // Update ikon di header
     const icon = document.getElementById('header-theme-icon');
     if(icon) {
       icon.className = isDarkMode ? 'fa-solid fa-sun md:text-lg text-amber-300' : 'fa-solid fa-moon md:text-lg';
     }
   }
 
-  // Jalankan inisialisasi tema saat aplikasi dimuat
   initTheme();
 
-
-  // --- DUMMY DATA ---
   let dummyStorage = [
     {id: 'TX-1', tanggal: '12 Jun 2026', tipe: 'Pemasukan', nominal: 2500000, keterangan: 'Saldo Awal Bulan', bukti: ''},
     {id: 'TX-2', tanggal: '13 Jun 2026', tipe: 'Pengeluaran', nominal: 150000, keterangan: 'Beli Kebutuhan ATK', bukti: 'https://i.ibb.co/6yq7hW7/placeholder.png'},
     {id: 'TX-3', tanggal: '05 Jan 2026', tipe: 'Pemasukan', nominal: 5000000, keterangan: 'Sumbangan Donatur', bukti: ''},
     {id: 'TX-4', tanggal: '20 Mar 2026', tipe: 'Pengeluaran', nominal: 750000, keterangan: 'Perbaikan Fasilitas', bukti: ''},
   ];
-  let dummyTahun = []; // Dikosongkan agar murni mendeteksi dari database transaksi
+  let dummyTahun = []; 
 
   async function callAPI(action, payload = {}) {
     try {
@@ -580,7 +538,6 @@
         if(action === 'getRekapData') resolve(dummyStorage);
         if(action === 'ubahPassword') resolve({success: true, message: 'Password Dummy berhasil diubah!'});
         
-        // Mock Response Tahun
         if(action === 'getTahun') resolve({success: true, data: dummyTahun});
         if(action === 'tambahTahun') {
             if(!dummyTahun.includes(payload.tahun)) dummyTahun.unshift(payload.tahun);
@@ -595,13 +552,13 @@
             let chartIn = [0,0,0,0,0,0,0,0,0,0,0,0];
             let chartOut = [0,0,0,0,0,0,0,0,0,0,0,0];
             
-            let uniqueYears = new Set(dummyTahun); // Mengumpulkan tahun dari dummy manual
+            let uniqueYears = new Set(dummyTahun); 
 
             dummyStorage.forEach(t => { 
-              let txYear = t.tanggal.split(' ')[2]; // Extract "2026"
-              if(txYear) uniqueYears.add(txYear); // Deteksi otomatis tahun dari riwayat dummy
+              let txYear = t.tanggal.split(' ')[2]; 
+              if(txYear) uniqueYears.add(txYear); 
               
-              let txMonthStr = t.tanggal.split(' ')[1]; // Extract "Jun"
+              let txMonthStr = t.tanggal.split(' ')[1]; 
               const monthMap = {'Jan':0, 'Feb':1, 'Mar':2, 'Apr':3, 'Mei':4, 'Jun':5, 'Jul':6, 'Ags':7, 'Sep':8, 'Okt':9, 'Nov':10, 'Des':11};
               let txMonth = monthMap[txMonthStr] || 0;
 
@@ -627,14 +584,13 @@
                 dataIn: chartIn,
                 dataOut: chartOut
               },
-              availableYears: Array.from(uniqueYears).sort((a,b) => b - a) // Kirim tahun yang tersedia
+              availableYears: Array.from(uniqueYears).sort((a,b) => b - a) 
             });
         }
-      }, 300); // PERBAIKAN: Mempercepat proses loading Dummy dari 600ms ke 300ms
+      }, 300); 
     });
   }
 
-  // --- PASSWORD TOGGLE LOGIC ---
   function togglePassword(inputId, iconId) {
     const input = document.getElementById(inputId);
     const icon = document.getElementById(iconId);
@@ -649,18 +605,16 @@
     }
   }
 
-  // --- CHART LOGIC ---
   let cashFlowChartInstance = null;
 
   function renderChart(labels, dataIn, dataOut) {
-    // Simpan data untuk render ulang ketika tema diganti
     window.currentChartData = { labels, dataIn, dataOut };
     
     const ctx = document.getElementById('cashFlowChart').getContext('2d');
     if (cashFlowChartInstance) cashFlowChartInstance.destroy();
     
-    const textColor = isDarkMode ? '#9ca3af' : '#6b7280'; // gray-400 vs gray-500
-    const gridColor = isDarkMode ? '#374151' : '#f3f4f6'; // gray-700 vs gray-100
+    const textColor = isDarkMode ? '#9ca3af' : '#6b7280'; 
+    const gridColor = isDarkMode ? '#374151' : '#f3f4f6'; 
 
     cashFlowChartInstance = new Chart(ctx, {
       type: 'line',
@@ -683,7 +637,6 @@
     });
   }
 
-  // --- NAVIGATION & LOGIC ---
   function navTo(viewName) {
     document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
@@ -726,14 +679,12 @@
     let selectEl = document.getElementById('filter-period');
     let filterVal = selectEl && selectEl.value ? selectEl.value : new Date().getFullYear().toString();
     
-    // Ubah Judul Grafik (Tahun 2026, dll)
     let chartLabel = document.getElementById('chart-tahun-label');
     if(chartLabel) chartLabel.innerText = filterVal === 'semua' ? '(Semua Waktu)' : `(${filterVal})`;
 
     const res = await callAPI('getDashboardData', { filter: filterVal });
     hideLoader();
 
-    // Rebuild Dropdown secara otomatis dari deteksi Database
     if(res.availableYears && selectEl) {
        let currentSelection = selectEl.value || filterVal;
        let opts = '';
@@ -743,7 +694,6 @@
        opts += `<option value="semua" class="text-gray-800 dark:text-gray-100 dark:bg-gray-800">Semua Waktu</option>`;
        selectEl.innerHTML = opts;
        
-       // Kembalikan ke opsi yang dipilih sebelumnya (jika valid)
        if(res.availableYears.includes(currentSelection) || currentSelection === 'semua') {
           selectEl.value = currentSelection;
        } else if (res.availableYears.length > 0) {
@@ -792,7 +742,6 @@
     document.getElementById('dash-history').innerHTML = histHTML;
   }
 
-  // --- LOGIC UPLOAD FOTO & PREVIEW ---
   let selectedFile = null;
 
   document.querySelectorAll('input[name="tipe"]').forEach(radio => {
@@ -802,7 +751,7 @@
         container.classList.remove('hidden');
       } else {
         container.classList.add('hidden');
-        removeImage(new Event('click')); // Reset foto jika kembali ke pemasukan
+        removeImage(new Event('click')); 
       }
     });
   });
@@ -830,12 +779,8 @@
     document.getElementById('upload-placeholder').classList.remove('hidden');
   }
 
-  // --- FORMAT INPUT NOMINAL (TITIK RIBUAN) ---
   function formatRupiahInput(element) {
-    // Hapus semua karakter selain angka
     let value = element.value.replace(/[^0-9]/g, '');
-    
-    // Format kembali dengan titik sebagai pemisah ribuan
     if (value !== '') {
       element.value = parseInt(value, 10).toLocaleString('id-ID');
     } else {
@@ -846,7 +791,6 @@
   async function submitTransaksi() {
     const tipe = document.querySelector('input[name="tipe"]:checked').value;
     const tanggal = document.getElementById('input-tanggal').value;
-    // Hapus format titik sebelum dikirim ke database
     const nominal = document.getElementById('input-nominal').value.replace(/\./g, '');
     const keterangan = document.getElementById('input-keterangan').value;
 
@@ -856,12 +800,10 @@
 
     let buktiLink = "";
 
-    // Proses upload foto ke ImgBB terlebih dahulu jika ada
     if (tipe === 'Pengeluaran' && selectedFile) {
       showLoader();
       document.querySelector('#loader p').innerText = "Mengunggah foto...";
       
-      // API Key Gratis ImgBB (Opsional: Daftar di api.imgbb.com dan ganti dengan milik Anda)
       const IMGBB_API_KEY = "69e71ddab1f5a50785f7823f66c0500a"; 
       const formData = new FormData();
       formData.append('image', selectedFile);
@@ -902,7 +844,7 @@
       Swal.fire({ title: 'Berhasil', text: res.message, icon: 'success' });
       document.getElementById('form-input').reset();
       document.getElementById('input-tanggal').valueAsDate = new Date();
-      removeImage(new Event('click')); // Kosongkan file input preview
+      removeImage(new Event('click')); 
     } else {
       Swal.fire({ title: 'Gagal', text: res.message, icon: 'error' });
     }
@@ -972,7 +914,6 @@
       Swal.fire({ title: 'Berhasil', text: res.message, icon: 'success' });
       document.getElementById('set-tahun-baru').value = '';
       
-      // Kosongkan dropdown dashboard agar load ulang daftar tahun saat masuk ke menu Home
       document.getElementById('filter-period').innerHTML = ''; 
     } else {
       Swal.fire({ title: 'Gagal', text: res.message, icon: 'error' });
