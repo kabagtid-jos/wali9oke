@@ -189,6 +189,95 @@
     .swal2-container {
       z-index: 10000 !important;
     }
+
+
+    /* Preview PDF khusus agar proporsional di PC dan mobile */
+    .pdf-preview-popup {
+      width: min(96vw, 980px) !important;
+      max-width: 980px !important;
+      padding: 1rem !important;
+      border-radius: 1.25rem !important;
+    }
+
+    .pdf-preview-popup .swal2-title {
+      font-size: 1.125rem !important;
+      margin-bottom: 0.75rem !important;
+    }
+
+    .pdf-preview-html {
+      width: 100% !important;
+      margin: 0 !important;
+      overflow: hidden !important;
+    }
+
+    .pdf-preview-wrapper {
+      width: 100%;
+      height: min(72vh, 720px);
+      min-height: 520px;
+      border-radius: 0.9rem;
+      overflow: hidden;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+    }
+
+    html.dark .pdf-preview-wrapper {
+      border-color: #374151;
+      background: #111827;
+    }
+
+    .pdf-preview-frame {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+      background: #ffffff;
+    }
+
+    .pdf-preview-actions {
+      width: 100% !important;
+      gap: 0.75rem !important;
+      flex-wrap: wrap !important;
+    }
+
+    .pdf-preview-popup .swal2-confirm,
+    .pdf-preview-popup .swal2-cancel {
+      min-width: 140px;
+      margin: 0 !important;
+    }
+
+    @media (max-width: 767px) {
+      .pdf-preview-popup {
+        width: 96vw !important;
+        padding: 0.75rem !important;
+        border-radius: 1rem !important;
+      }
+
+      .pdf-preview-popup .swal2-title {
+        font-size: 1rem !important;
+        margin-bottom: 0.6rem !important;
+      }
+
+      .pdf-preview-wrapper {
+        height: 68vh;
+        min-height: 420px;
+        border-radius: 0.75rem;
+      }
+
+      .pdf-preview-actions {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.5rem !important;
+      }
+
+      .pdf-preview-popup .swal2-confirm,
+      .pdf-preview-popup .swal2-cancel {
+        width: 100%;
+        min-width: 0;
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+        font-size: 0.8rem !important;
+      }
+    }
   </style>
 </head>
 <body class="antialiased text-gray-800 bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
@@ -1110,13 +1199,29 @@
     });
 
     const pdfBlobUrl = doc.output('bloburl');
+    const pdfPreviewUrl = `${pdfBlobUrl}#toolbar=0&navpanes=0&scrollbar=1&view=FitH`;
     
     Swal.fire({
       title: 'Preview Laporan PDF',
-      html: `<iframe src="${pdfBlobUrl}#toolbar=0" class="w-full h-[50vh] md:h-[65vh] rounded-lg border border-gray-200 dark:border-gray-700 bg-white"></iframe>`,
-      width: '800px',
+      html: `
+        <div class="pdf-preview-wrapper">
+          <iframe
+            src="${pdfPreviewUrl}"
+            class="pdf-preview-frame"
+            title="Preview Laporan PDF">
+          </iframe>
+        </div>
+      `,
+      width: 'auto',
+      padding: 0,
+      heightAuto: false,
+      customClass: {
+        popup: 'pdf-preview-popup',
+        htmlContainer: 'pdf-preview-html',
+        actions: 'pdf-preview-actions'
+      },
       showCancelButton: true,
-      confirmButtonText: '<i class="fa-solid fa-download mr-1"></i> Download PDF',
+      confirmButtonText: '<i class="fa-solid fa-download mr-1"></i> Download',
       cancelButtonText: 'Tutup',
       confirmButtonColor: '#10b981',
       cancelButtonColor: '#ef4444',
