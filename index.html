@@ -1068,7 +1068,24 @@
     });
 
     const pdfBlobUrl = doc.output('bloburl');
-    window.open(pdfBlobUrl, '_blank');
+    
+    // PERBAIKAN: Menampilkan preview PDF di dalam pop-up modal SweetAlert2
+    Swal.fire({
+      title: 'Preview Laporan PDF',
+      html: `<iframe src="${pdfBlobUrl}#toolbar=0" class="w-full h-[50vh] md:h-[65vh] rounded-lg border border-gray-200 dark:border-gray-700 bg-white"></iframe>`,
+      width: '800px',
+      showCancelButton: true,
+      confirmButtonText: '<i class="fa-solid fa-download mr-1"></i> Download PDF',
+      cancelButtonText: 'Tutup',
+      confirmButtonColor: '#10b981',
+      cancelButtonColor: '#ef4444',
+      showCloseButton: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Jika tombol Download ditekan, file akan langsung tersimpan ke perangkat
+        doc.save(`Rekap_Wali9_${new Date().getTime()}.pdf`);
+      }
+    });
   }
 
   async function submitUbahPassword() {
