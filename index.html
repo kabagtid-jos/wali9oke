@@ -686,6 +686,247 @@
       #view-rekap .overflow-x-auto { border-radius: 22px; }
     }
 
+
+    /* Mobile dashboard refinement: compact, non-overlapping banking layout */
+    @media (max-width: 767px) {
+      body {
+        font-size: 14px;
+      }
+
+      #view-dashboard {
+        overflow-x: hidden;
+      }
+
+      #view-dashboard > .max-w-6xl:first-child > div {
+        min-height: 330px;
+        padding-bottom: 4.9rem !important;
+        border-radius: 0 0 30px 30px !important;
+      }
+
+      #view-dashboard > .max-w-6xl:first-child > div > div {
+        padding: 1.35rem 1.25rem 0 !important;
+      }
+
+      #view-dashboard > .max-w-6xl:first-child > div::before {
+        width: 190px;
+        height: 190px;
+        right: -72px;
+        top: -62px;
+      }
+
+      #view-dashboard > .max-w-6xl:first-child > div::after {
+        display: none;
+      }
+
+      #view-dashboard > .max-w-6xl:first-child .mb-6 {
+        margin-bottom: 1.45rem !important;
+      }
+
+      #view-dashboard > .max-w-6xl:first-child h2 {
+        font-size: 0.86rem !important;
+        line-height: 1.25rem !important;
+      }
+
+      #view-dashboard > .max-w-6xl:first-child h1:not(#dash-saldo) {
+        font-size: 1.35rem !important;
+        line-height: 1.7rem !important;
+      }
+
+      #view-dashboard [onclick="toggleTheme()"] {
+        width: 2.7rem !important;
+        height: 2.7rem !important;
+      }
+
+      #view-dashboard > .max-w-6xl:first-child .flex.justify-between.items-end {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 0.72rem !important;
+      }
+
+      #view-dashboard > .max-w-6xl:first-child .flex.justify-between.items-end > div {
+        width: 100%;
+        min-width: 0;
+      }
+
+      #view-dashboard > .max-w-6xl:first-child .flex.justify-between.items-end p {
+        font-size: 0.86rem !important;
+        margin-bottom: 0.28rem !important;
+      }
+
+      #dash-saldo {
+        max-width: 100%;
+        font-size: clamp(1.95rem, 8.6vw, 2.35rem) !important;
+        line-height: 1.05 !important;
+        letter-spacing: -0.055em !important;
+        white-space: nowrap;
+      }
+
+      #filter-period {
+        align-self: flex-start !important;
+        width: auto !important;
+        max-width: calc(100vw - 2.5rem) !important;
+        min-height: 34px !important;
+        padding: 0.38rem 0.78rem !important;
+        font-size: 0.75rem !important;
+        line-height: 1rem !important;
+        margin-top: 0 !important;
+      }
+
+      #view-dashboard .max-w-6xl.mx-auto:not(:first-child) {
+        padding-left: 0.95rem !important;
+        padding-right: 0.95rem !important;
+      }
+
+      #view-dashboard .px-6,
+      #view-dashboard .md\:px-10 {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+      }
+
+      #view-dashboard .-mt-10 {
+        margin-top: -3.45rem !important;
+        gap: 0.72rem !important;
+      }
+
+      #view-dashboard .-mt-10 > div {
+        padding: 0.82rem 0.85rem !important;
+        border-radius: 20px !important;
+        min-height: 116px;
+        gap: 0.6rem !important;
+      }
+
+      #view-dashboard .-mt-10 > div .w-10.h-10 {
+        width: 2.35rem !important;
+        height: 2.35rem !important;
+      }
+
+      #view-dashboard .-mt-10 > div i {
+        font-size: 0.95rem !important;
+      }
+
+      #view-dashboard .-mt-10 > div p:first-of-type {
+        font-size: 0.64rem !important;
+        line-height: 0.95rem !important;
+        letter-spacing: 0.035em !important;
+      }
+
+      #dash-in,
+      #dash-out {
+        font-size: 0.93rem !important;
+        line-height: 1.18rem !important;
+        letter-spacing: -0.04em !important;
+        word-break: keep-all;
+      }
+
+      #view-dashboard .mt-6.grid {
+        margin-top: 1rem !important;
+        gap: 0.95rem !important;
+      }
+
+      #view-dashboard .mt-6.grid > div,
+      #view-dashboard .mt-6.md\:mt-10 > div,
+      #dash-history > div {
+        border-radius: 22px !important;
+      }
+
+      #view-dashboard .mt-6.grid > div {
+        padding: 1rem !important;
+      }
+
+      #view-dashboard h3 {
+        font-size: 1rem !important;
+        line-height: 1.35rem !important;
+        margin-bottom: 0.8rem !important;
+      }
+
+      #dash-insights {
+        gap: 0.62rem !important;
+        font-size: 0.82rem !important;
+        line-height: 1.42rem !important;
+      }
+
+      #dash-insights li {
+        align-items: flex-start;
+      }
+
+      #dash-insights i {
+        font-size: 0.78rem !important;
+        margin-top: 0.18rem !important;
+      }
+
+      #chart-tahun-label {
+        font-size: 0.92rem !important;
+      }
+
+      #view-dashboard .relative.h-40 {
+        height: 10.5rem !important;
+      }
+
+      #view-dashboard .mt-6.md\:mt-10 {
+        margin-top: 1rem !important;
+      }
+
+      #view-dashboard .mt-6.md\:mt-10 h3 {
+        font-size: 0.98rem !important;
+      }
+
+      #view-dashboard .mt-6.md\:mt-10 button {
+        font-size: 0.72rem !important;
+      }
+
+      #dash-history {
+        gap: 0.75rem !important;
+      }
+
+      #dash-history > div {
+        padding: 0.9rem !important;
+      }
+
+      #dash-history .w-10.h-10,
+      #dash-history .md\:w-12.md\:h-12 {
+        width: 2.25rem !important;
+        height: 2.25rem !important;
+      }
+
+      #dash-history p:first-child {
+        font-size: 0.86rem !important;
+        line-height: 1.15rem !important;
+      }
+
+      #dash-history p:nth-child(2),
+      #dash-history a {
+        font-size: 0.7rem !important;
+      }
+
+      #dash-history span {
+        font-size: 0.84rem !important;
+        white-space: nowrap;
+      }
+
+      .bottom-nav {
+        width: calc(100% - 20px) !important;
+        left: 10px !important;
+        bottom: 10px !important;
+        border-radius: 24px !important;
+        padding: 0.52rem 0.55rem !important;
+        padding-bottom: calc(0.52rem + env(safe-area-inset-bottom)) !important;
+      }
+
+      .nav-item {
+        min-width: 58px !important;
+        padding: 0.46rem 0.58rem !important;
+        border-radius: 18px !important;
+      }
+
+      .nav-item i {
+        font-size: 1.08rem !important;
+      }
+
+      .nav-item span {
+        font-size: 0.63rem !important;
+      }
+    }
+
   </style>
 </head>
 <body class="antialiased text-gray-800 bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
@@ -1107,21 +1348,22 @@
     
     const textColor = isDarkMode ? '#9ca3af' : '#6b7280'; 
     const gridColor = isDarkMode ? '#374151' : '#f3f4f6'; 
+    const isMobileChart = window.innerWidth < 768;
 
     cashFlowChartInstance = new Chart(ctx, {
       type: 'line',
       data: {
         labels: labels,
         datasets: [
-          { label: 'Pemasukan', data: dataIn, borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.1)', tension: 0.4, fill: true, pointRadius: 3, borderWidth: 2 },
-          { label: 'Pengeluaran', data: dataOut, borderColor: '#ef4444', backgroundColor: 'rgba(239, 68, 68, 0.1)', tension: 0.4, fill: true, pointRadius: 3, borderWidth: 2 }
+          { label: 'Pemasukan', data: dataIn, borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.1)', tension: 0.4, fill: true, pointRadius: isMobileChart ? 2 : 3, borderWidth: isMobileChart ? 1.8 : 2 },
+          { label: 'Pengeluaran', data: dataOut, borderColor: '#ef4444', backgroundColor: 'rgba(239, 68, 68, 0.1)', tension: 0.4, fill: true, pointRadius: isMobileChart ? 2 : 3, borderWidth: isMobileChart ? 1.8 : 2 }
         ]
       },
       options: {
         responsive: true, maintainAspectRatio: false,
         plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false } },
         scales: {
-          x: { grid: { display: false }, ticks: { font: {size: 10}, color: textColor } },
+          x: { grid: { display: false }, ticks: { font: { size: isMobileChart ? 8 : 10 }, color: textColor, maxRotation: 0, autoSkipPadding: 8 } },
           y: { grid: { borderDash: [4, 4], color: gridColor }, ticks: { display: false } }
         },
         interaction: { mode: 'nearest', axis: 'x', intersect: false }
