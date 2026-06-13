@@ -15,7 +15,6 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   
-  <!-- Tambahan Library untuk Export Excel & PDF -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
@@ -200,7 +199,6 @@
     <p class="text-sm text-gray-600 dark:text-gray-300 font-medium tracking-wide">Memproses...</p>
   </div>
 
-  <!-- NAVIGATION BAR -->
   <nav id="bottom-nav" class="bottom-nav glass hidden bg-white/80 dark:bg-gray-900/80 border-t border-gray-100 dark:border-gray-800">
     <div class="hidden md:flex items-center mr-auto cursor-pointer">
        <div class="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center text-white text-sm shadow-sm mr-3">
@@ -434,7 +432,6 @@
           </div>
         </div>
 
-        <!-- Tabel Data -->
         <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden min-h-[400px]">
           <div class="overflow-x-auto">
             <table class="w-full text-left text-sm text-gray-600 dark:text-gray-300">
@@ -510,7 +507,7 @@
         
         <div class="text-center mt-10 opacity-50 pb-8">
           <p class="text-xs md:text-sm font-medium dark:text-white">Aplikasi Wali 9 P2S Abu Zairi</p>
-          <p class="text-[10px] md:text-xs dark:text-gray-300">Versi 1.6 • Bug fixes</p>
+          <p class="text-[10px] md:text-xs dark:text-gray-300">Versi 1.7 • PDF & UI Restored</p>
         </div>
       </div>
     </div>
@@ -793,8 +790,6 @@
     document.getElementById('dash-history').innerHTML = histHTML;
   }
 
-  // --- FUNGSI UPLOAD GAMBAR DAN INPUT TRANSAKSI YANG DIPERBAIKI ---
-  
   let selectedFile = null;
 
   document.querySelectorAll('input[name="tipe"]').forEach(radio => {
@@ -908,7 +903,6 @@
       Swal.fire({ title: 'Gagal', text: res.message, icon: 'error' });
     }
   }
-  // --- AKHIR BLOK FUNGSI UPLOAD GAMBAR ---
 
   let allRekapData = [];
   let currentFilteredData = [];
@@ -923,14 +917,12 @@
     if(res) {
       allRekapData = res;
       
-      // Mengumpulkan semua Tahun dari data transaksi
       const years = new Set();
       res.forEach(tx => {
         const txYear = tx.tanggal.split(' ')[2];
         if (txYear) years.add(txYear);
       });
       
-      // Update Dropdown Tahun Otomatis
       let tahunOpts = '<option value="semua">Semua Tahun</option>';
       Array.from(years).sort((a,b) => b - a).forEach(y => {
         tahunOpts += `<option value="${y}">${y}</option>`;
@@ -942,7 +934,7 @@
         document.getElementById('filter-rekap-tahun').value = currentYearVal;
       }
 
-      filterRekap(); // Memuat tabel sesuai filter
+      filterRekap(); 
     }
   }
 
@@ -951,7 +943,7 @@
     const filterTahun = document.getElementById('filter-rekap-tahun').value;
     
     currentFilteredData = allRekapData.filter(tx => {
-      const parts = tx.tanggal.split(' '); // ["12", "Jun", "2026"]
+      const parts = tx.tanggal.split(' '); 
       if (parts.length !== 3) return true;
       
       const monthMap = {'Jan':'01', 'Feb':'02', 'Mar':'03', 'Apr':'04', 'May':'05', 'Mei':'05', 'Jun':'06', 'Jul':'07', 'Aug':'08', 'Ags':'08', 'Sep':'09', 'Oct':'10', 'Okt':'10', 'Nov':'11', 'Dec':'12', 'Des':'12'};
@@ -1019,7 +1011,6 @@
 
     let saldoAkhir = totalMasuk - totalKeluar;
 
-    // Menambahkan baris kosong dan ringkasan saldo di baris paling bawah Excel
     exportData.push({});
     exportData.push({ 'Keterangan': 'TOTAL PEMASUKAN', 'Nominal (Rp)': totalMasuk });
     exportData.push({ 'Keterangan': 'TOTAL PENGELUARAN', 'Nominal (Rp)': totalKeluar });
@@ -1068,16 +1059,16 @@
       head: [['No', 'Tanggal', 'Keterangan', 'Tipe', 'Nominal (Rp)', 'Bukti']],
       body: bodyData,
       foot: [
-        // Menambahkan footer tabel tebal untuk Total & Saldo Akhir di PDF
         [{ content: 'Total Pemasukan', colSpan: 4, styles: { halign: 'right' } }, '+' + totalMasuk.toLocaleString('id-ID'), ''],
         [{ content: 'Total Pengeluaran', colSpan: 4, styles: { halign: 'right' } }, '-' + totalKeluar.toLocaleString('id-ID'), ''],
         [{ content: 'SISA SALDO AKHIR', colSpan: 4, styles: { halign: 'right', fontStyle: 'bold', fillColor: [16, 185, 129], textColor: 255 } }, 'Rp ' + saldoAkhir.toLocaleString('id-ID'), '']
       ],
       theme: 'grid',
-      headStyles: { fillColor: [16, 185, 129] } // Warna Emerald
+      headStyles: { fillColor: [16, 185, 129] } 
     });
 
-    doc.save(`Rekap_Wali9_${new Date().getTime()}.pdf`);
+    const pdfBlobUrl = doc.output('bloburl');
+    window.open(pdfBlobUrl, '_blank');
   }
 
   async function submitUbahPassword() {
