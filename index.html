@@ -804,7 +804,9 @@
       showLoader();
       document.querySelector('#loader p').innerText = "Mengunggah foto...";
       
-      const IMGBB_API_KEY = "69e71ddab1f5a50785f7823f66c0500a"; 
+      // ⚠️ GANTI TEKS DI BAWAH INI DENGAN API KEY ANDA DARI API.IMGBB.COM
+      const IMGBB_API_KEY = "d9e6199d92abbae9ddea7cbca2361bc3"; 
+      
       const formData = new FormData();
       
       // PERBAIKAN: Gunakan data base64 dari preview gambar agar lebih stabil saat upload via API
@@ -821,8 +823,14 @@
         if (dataImg.success) {
           buktiLink = dataImg.data.url;
         } else {
-          // PERBAIKAN: Menampilkan detail error asli dari server ImgBB
-          throw new Error(dataImg.error ? dataImg.error.message : "Gagal mendapatkan respon dari server.");
+          // Menampilkan detail error asli dari server ImgBB
+          let errorMsg = dataImg.error ? dataImg.error.message : "Gagal mendapatkan respon dari server.";
+          
+          // Tangkap error API Key secara spesifik
+          if (errorMsg.toLowerCase().includes("invalid api")) {
+            errorMsg = "Wajib masukkan API Key milik Anda! Daftar gratis di api.imgbb.com lalu ubah kode IMGBB_API_KEY di file HTML.";
+          }
+          throw new Error(errorMsg);
         }
       } catch (error) {
         hideLoader();
