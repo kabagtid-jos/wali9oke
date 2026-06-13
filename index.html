@@ -402,7 +402,7 @@
 
             <div class="mb-5">
               <label class="block text-sm font-semibold text-gray-600 dark:text-gray-300 mb-2">Nominal (Rp)</label>
-              <input type="number" id="input-nominal" required placeholder="0" class="w-full px-4 py-3 text-2xl font-bold bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500">
+              <input type="text" inputmode="numeric" id="input-nominal" required placeholder="0" class="w-full px-4 py-3 text-2xl font-bold bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500" oninput="formatRupiahInput(this)">
             </div>
 
             <div class="mb-8">
@@ -830,10 +830,24 @@
     document.getElementById('upload-placeholder').classList.remove('hidden');
   }
 
+  // --- FORMAT INPUT NOMINAL (TITIK RIBUAN) ---
+  function formatRupiahInput(element) {
+    // Hapus semua karakter selain angka
+    let value = element.value.replace(/[^0-9]/g, '');
+    
+    // Format kembali dengan titik sebagai pemisah ribuan
+    if (value !== '') {
+      element.value = parseInt(value, 10).toLocaleString('id-ID');
+    } else {
+      element.value = '';
+    }
+  }
+
   async function submitTransaksi() {
     const tipe = document.querySelector('input[name="tipe"]:checked').value;
     const tanggal = document.getElementById('input-tanggal').value;
-    const nominal = document.getElementById('input-nominal').value;
+    // Hapus format titik sebelum dikirim ke database
+    const nominal = document.getElementById('input-nominal').value.replace(/\./g, '');
     const keterangan = document.getElementById('input-keterangan').value;
 
     if(!tanggal || !nominal || !keterangan) {
