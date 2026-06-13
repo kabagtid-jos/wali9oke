@@ -2431,9 +2431,6 @@
 
           <label class="block text-xs font-bold text-gray-500 dark:text-gray-400">URL Bukti Foto</label>
           <input id="edit-bukti" value="${escapeHTML(tx.bukti || '')}" class="swal2-input !w-full !mx-0 !mt-0 text-sm" placeholder="https://...">
-          <p class="text-xs text-amber-600 dark:text-amber-300 leading-relaxed">
-            Edit/hapus membutuhkan dukungan action <b>editTransaksi</b> dan <b>hapusTransaksi</b> pada Google Apps Script.
-          </p>
         </div>
       `,
       customClass: { popup: 'swal-wide-form' },
@@ -2602,17 +2599,19 @@
     if(!currentFilteredData || currentFilteredData.length === 0) return Swal.fire('Info', 'Tidak ada data untuk diexport', 'info');
     
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
-    const marginX = 14;
-    const periodText = getSelectedPeriodText();
-    const printedAt = new Date().toLocaleString('id-ID');
+    const doc = new jsPDF();
+    
+    doc.setFontSize(16);
+    doc.text("Rekapitulasi Keuangan Wali 9 P2S", 14, 20);
+    doc.setFontSize(10);
+    doc.setTextColor(100);
+    doc.text(`Dicetak pada: ${new Date().toLocaleString('id-ID')}`, 14, 28);
 
     let totalMasuk = 0;
     let totalKeluar = 0;
 
     // Urutkan data khusus untuk PDF: transaksi paling lama di atas, terbaru di bawah.
+    // Tampilan tabel rekap di aplikasi tetap mengikuti urutan semula.
     const monthMapPDF = {
       'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'May': 4, 'Mei': 4, 'Jun': 5,
       'Jul': 6, 'Aug': 7, 'Ags': 7, 'Sep': 8, 'Oct': 9, 'Okt': 9, 'Nov': 10, 'Dec': 11, 'Des': 11
@@ -2621,6 +2620,7 @@
     const parseTanggalPDF = (tanggalText) => {
       const parts = (tanggalText || '').split(' ');
       if (parts.length !== 3) return 0;
+
       const day = parseInt(parts[0], 10) || 1;
       const month = Object.prototype.hasOwnProperty.call(monthMapPDF, parts[1]) ? monthMapPDF[parts[1]] : 0;
       const year = parseInt(parts[2], 10) || 1970;
@@ -2629,108 +2629,35 @@
 
     const pdfOrderedData = [...currentFilteredData].sort((a, b) => parseTanggalPDF(a.tanggal) - parseTanggalPDF(b.tanggal));
 
-    pdfOrderedData.forEach(tx => {
+    const bodyData = pdfOrderedData.map((tx, idx) => {
       let nom = parseFloat(tx.nominal) || 0;
       if (tx.tipe === 'Pemasukan') totalMasuk += nom;
       else totalKeluar += nom;
-    });
 
-    const saldoAkhir = totalMasuk - totalKeluar;
-
-    // Kop resmi laporan
-    doc.setFillColor(15, 23, 42);
-    doc.rect(0, 0, pageWidth, 34, 'F');
-    doc.setTextColor(255, 255, 255);
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(16);
-    doc.text('LAPORAN KEUANGAN BULANAN', pageWidth / 2, 13, { align: 'center' });
-    doc.setFontSize(12);
-    doc.text('KAS WALI 9 P2S ABU ZAIRI', pageWidth / 2, 21, { align: 'center' });
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(9);
-    doc.text(`Periode: ${periodText}  •  Dicetak: ${printedAt}`, pageWidth / 2, 28, { align: 'center' });
-
-    // Ringkasan angka
-    const cardY = 42;
-    const cardW = (pageWidth - (marginX * 2) - 8) / 3;
-    const cards = [
-      { title: 'TOTAL PEMASUKAN', value: formatRupiah(totalMasuk), color: [16, 185, 129] },
-      { title: 'TOTAL PENGELUARAN', value: formatRupiah(totalKeluar), color: [239, 68, 68] },
-      { title: 'SALDO AKHIR', value: formatRupiah(saldoAkhir), color: [15, 23, 42] }
-    ];
-
-    cards.forEach((card, idx) => {
-      const x = marginX + idx * (cardW + 4);
-      doc.setDrawColor(226, 232, 240);
-      doc.setFillColor(248, 250, 252);
-      doc.roundedRect(x, cardY, cardW, 22, 3, 3, 'FD');
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(7.5);
-      doc.setTextColor(100, 116, 139);
-      doc.text(card.title, x + 4, cardY + 7);
-      doc.setFontSize(10.5);
-      doc.setTextColor(card.color[0], card.color[1], card.color[2]);
-      doc.text(card.value, x + 4, cardY + 16);
-    });
-
-    const bodyData = pdfOrderedData.map((tx, idx) => {
-      let nom = parseFloat(tx.nominal) || 0;
       return [
         idx + 1,
         tx.tanggal,
         tx.keterangan,
         tx.tipe,
         (tx.tipe === 'Pengeluaran' ? '-' : '+') + nom.toLocaleString('id-ID'),
-        tx.bukti ? 'Ada' : '-'
+        tx.bukti ? 'Terlampir' : '-'
       ];
     });
 
+    let saldoAkhir = totalMasuk - totalKeluar;
+
     doc.autoTable({
-      startY: 72,
+      startY: 35,
       head: [['No', 'Tanggal', 'Keterangan', 'Tipe', 'Nominal (Rp)', 'Bukti']],
       body: bodyData,
       foot: [
-        [{ content: 'Total Pemasukan', colSpan: 4, styles: { halign: 'right', fontStyle: 'bold' } }, '+' + totalMasuk.toLocaleString('id-ID'), ''],
-        [{ content: 'Total Pengeluaran', colSpan: 4, styles: { halign: 'right', fontStyle: 'bold' } }, '-' + totalKeluar.toLocaleString('id-ID'), ''],
-        [{ content: 'SISA SALDO AKHIR', colSpan: 4, styles: { halign: 'right', fontStyle: 'bold', fillColor: [15, 23, 42], textColor: 255 } }, 'Rp ' + saldoAkhir.toLocaleString('id-ID'), '']
+        [{ content: 'Total Pemasukan', colSpan: 4, styles: { halign: 'right' } }, '+' + totalMasuk.toLocaleString('id-ID'), ''],
+        [{ content: 'Total Pengeluaran', colSpan: 4, styles: { halign: 'right' } }, '-' + totalKeluar.toLocaleString('id-ID'), ''],
+        [{ content: 'SISA SALDO AKHIR', colSpan: 4, styles: { halign: 'right', fontStyle: 'bold', fillColor: [16, 185, 129], textColor: 255 } }, 'Rp ' + saldoAkhir.toLocaleString('id-ID'), '']
       ],
       theme: 'grid',
-      styles: { fontSize: 8, cellPadding: 2.6, lineColor: [226, 232, 240], lineWidth: 0.1 },
-      headStyles: { fillColor: [15, 23, 42], textColor: 255, fontStyle: 'bold' },
-      alternateRowStyles: { fillColor: [248, 250, 252] },
-      columnStyles: {
-        0: { cellWidth: 10, halign: 'center' },
-        1: { cellWidth: 24 },
-        2: { cellWidth: 65 },
-        3: { cellWidth: 25, halign: 'center' },
-        4: { cellWidth: 34, halign: 'right' },
-        5: { cellWidth: 18, halign: 'center' }
-      },
-      didDrawPage: function () {
-        const pageNumber = doc.internal.getNumberOfPages();
-        doc.setFontSize(8);
-        doc.setTextColor(148, 163, 184);
-        doc.text(`Kas Wali 9 P2S Abu Zairi • Halaman ${pageNumber}`, pageWidth / 2, pageHeight - 8, { align: 'center' });
-      }
+      headStyles: { fillColor: [16, 185, 129] } 
     });
-
-    let y = doc.lastAutoTable.finalY + 14;
-    if (y > pageHeight - 52) {
-      doc.addPage();
-      y = 24;
-    }
-
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(9);
-    doc.setTextColor(15, 23, 42);
-    doc.text('Mengetahui,', marginX + 12, y);
-    doc.text('Bendahara,', pageWidth - marginX - 48, y);
-    doc.text('Ketua/Pengurus', marginX + 8, y + 34);
-    doc.text('Bendahara Wali 9', pageWidth - marginX - 51, y + 34);
-
-    doc.setDrawColor(148, 163, 184);
-    doc.line(marginX + 4, y + 29, marginX + 52, y + 29);
-    doc.line(pageWidth - marginX - 58, y + 29, pageWidth - marginX - 6, y + 29);
 
     const pdfBlob = doc.output('blob');
     const pdfBlobUrl = URL.createObjectURL(pdfBlob);
@@ -2751,9 +2678,9 @@
       <div class="pdf-preview-wrapper">
         <div class="pdf-mobile-fallback">
           <div class="pdf-mobile-icon"><i class="fa-solid fa-file-pdf"></i></div>
-          <h3 class="text-base font-bold mb-2">PDF resmi berhasil dibuat</h3>
+          <h3 class="text-base font-bold mb-2">PDF berhasil dibuat</h3>
           <p class="text-sm text-gray-500 dark:text-gray-300 leading-relaxed max-w-xs">
-            Preview PDF di HP kadang dibatasi browser. Tekan tombol Buka PDF untuk melihat laporan di tab baru, atau Download untuk menyimpan.
+            Browser HP biasanya tidak bisa menampilkan preview PDF langsung di dalam popup. Tekan tombol di bawah untuk membuka PDF di tab baru, atau gunakan tombol Download.
           </p>
           <button type="button" id="open-pdf-mobile-btn" class="pdf-open-mobile-btn">
             <i class="fa-solid fa-up-right-from-square"></i> Buka PDF
@@ -2762,12 +2689,16 @@
       </div>
     ` : `
       <div class="pdf-preview-wrapper">
-        <iframe src="${pdfPreviewUrl}" class="pdf-preview-frame" title="Preview Laporan PDF Resmi"></iframe>
+        <iframe
+          src="${pdfPreviewUrl}"
+          class="pdf-preview-frame"
+          title="Preview Laporan PDF">
+        </iframe>
       </div>
     `;
     
     Swal.fire({
-      title: 'Preview Laporan PDF Resmi',
+      title: 'Preview Laporan PDF',
       html: previewHTML,
       width: 'auto',
       padding: 0,
@@ -2792,7 +2723,7 @@
       showCloseButton: true
     }).then((result) => {
       if (result.isConfirmed) {
-        doc.save(`Laporan_Bulanan_Wali9_${periodText.replace(/\s+/g, '_')}_${Date.now()}.pdf`);
+        doc.save(`Rekap_Wali9_${new Date().getTime()}.pdf`);
       }
     });
   }
