@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Wali 9 P2S Abu Zairi</title>
+  <title>Kas Wali 9 P2S Abu Zairi</title>
   
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -278,9 +278,417 @@
         font-size: 0.8rem !important;
       }
     }
+
+
+    /* ==============================================================
+       PREMIUM BANKING UI OVERRIDE
+       Fokus: tampilan lebih profesional tanpa mengubah logic aplikasi.
+       ============================================================== */
+    :root {
+      --bank-navy: #0f172a;
+      --bank-navy-2: #1e293b;
+      --bank-emerald: #10b981;
+      --bank-emerald-dark: #059669;
+      --bank-gold: #f6c76b;
+      --bank-muted: #64748b;
+      --bank-line: rgba(148, 163, 184, 0.22);
+      --bank-card: rgba(255,255,255,0.88);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background:
+        radial-gradient(circle at top left, rgba(16, 185, 129, 0.13), transparent 34%),
+        radial-gradient(circle at top right, rgba(15, 23, 42, 0.10), transparent 30%),
+        linear-gradient(180deg, #f8fafc 0%, #eef2f7 52%, #f8fafc 100%) !important;
+      color: #172033;
+    }
+
+    html.dark body {
+      background:
+        radial-gradient(circle at top left, rgba(16, 185, 129, 0.18), transparent 32%),
+        radial-gradient(circle at bottom right, rgba(246, 199, 107, 0.08), transparent 30%),
+        linear-gradient(180deg, #020617 0%, #0f172a 58%, #020617 100%) !important;
+      color: #e5e7eb;
+    }
+
+    .app-container::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image: linear-gradient(rgba(15, 23, 42, 0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(15, 23, 42, 0.03) 1px, transparent 1px);
+      background-size: 34px 34px;
+      mask-image: linear-gradient(to bottom, rgba(0,0,0,0.75), transparent 70%);
+      z-index: 0;
+    }
+
+    html.dark .app-container::before {
+      background-image: linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+    }
+
+    .page { position: relative; z-index: 1; }
+
+    /* Navigation: mobile floating bank tab, desktop premium topbar */
+    .bottom-nav {
+      width: calc(100% - 24px) !important;
+      left: 12px !important;
+      bottom: 12px !important;
+      border-radius: 28px !important;
+      padding: 0.65rem 0.7rem !important;
+      padding-bottom: calc(0.65rem + env(safe-area-inset-bottom)) !important;
+      background: rgba(255, 255, 255, 0.88) !important;
+      border: 1px solid rgba(226, 232, 240, 0.88) !important;
+      box-shadow: 0 24px 55px rgba(15, 23, 42, 0.18) !important;
+    }
+
+    html.dark .bottom-nav {
+      background: rgba(15, 23, 42, 0.86) !important;
+      border-color: rgba(51, 65, 85, 0.9) !important;
+      box-shadow: 0 24px 55px rgba(0, 0, 0, 0.38) !important;
+    }
+
+    .nav-item {
+      border-radius: 20px;
+      color: #94a3b8 !important;
+      min-width: 64px;
+      padding: 0.5rem 0.7rem !important;
+      position: relative;
+    }
+
+    .nav-item.active {
+      background: #0f172a !important;
+      color: #ffffff !important;
+      box-shadow: 0 12px 22px rgba(15, 23, 42, 0.22);
+    }
+
+    .nav-item.active i { color: #f6c76b !important; transform: translateY(-2px) !important; }
+    .nav-item span { letter-spacing: -0.01em; }
+
+    html.dark .nav-item.active {
+      background: linear-gradient(135deg, #10b981, #047857) !important;
+      box-shadow: 0 14px 24px rgba(16, 185, 129, 0.2);
+    }
+
+    html.dark .nav-item.active i { color: #ffffff !important; }
+
+    @media (min-width: 768px) {
+      .bottom-nav {
+        top: 14px !important;
+        bottom: auto !important;
+        left: 50% !important;
+        transform: translateX(-50%);
+        width: min(calc(100% - 48px), 1120px) !important;
+        height: 68px !important;
+        border-radius: 24px !important;
+        padding: 0 1rem !important;
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+      }
+
+      .bottom-nav > .hidden.md\:flex > div:first-child {
+        background: linear-gradient(135deg, #0f172a, #1e293b) !important;
+        border: 1px solid rgba(246, 199, 107, 0.42);
+      }
+
+      .nav-item { min-width: 0; }
+      .nav-item.active i { transform: none !important; }
+
+      #view-dashboard { padding-top: 92px !important; }
+      #view-input, #view-rekap, #view-setting { padding-top: 112px !important; }
+    }
+
+    /* Login */
+    #view-login > div {
+      background:
+        radial-gradient(circle at top, rgba(16, 185, 129, 0.14), transparent 35%),
+        linear-gradient(180deg, rgba(255,255,255,0.0), rgba(255,255,255,0.36));
+    }
+
+    #view-login .w-16.h-16 {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 58%, #10b981 100%) !important;
+      box-shadow: 0 24px 45px rgba(15, 23, 42, 0.22) !important;
+      border: 1px solid rgba(246, 199, 107, 0.45);
+    }
+
+    #view-login .max-w-sm {
+      background: rgba(255,255,255,0.86) !important;
+      border: 1px solid rgba(226,232,240,0.92) !important;
+      box-shadow: 0 30px 70px rgba(15, 23, 42, 0.13) !important;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+
+    html.dark #view-login .max-w-sm {
+      background: rgba(15,23,42,0.82) !important;
+      border-color: rgba(51,65,85,0.9) !important;
+    }
+
+    /* General premium cards */
+    #view-dashboard .rounded-2xl,
+    #view-dashboard .rounded-3xl,
+    #view-input .rounded-3xl,
+    #view-rekap .rounded-3xl,
+    #view-setting .rounded-3xl {
+      border-color: rgba(226, 232, 240, 0.88) !important;
+    }
+
+    #view-dashboard .bg-white,
+    #view-input .bg-white,
+    #view-rekap .bg-white,
+    #view-setting .bg-white {
+      background: rgba(255, 255, 255, 0.88) !important;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      box-shadow: 0 22px 55px rgba(15, 23, 42, 0.07) !important;
+    }
+
+    html.dark #view-dashboard .dark\:bg-gray-800,
+    html.dark #view-input .dark\:bg-gray-800,
+    html.dark #view-rekap .dark\:bg-gray-800,
+    html.dark #view-setting .dark\:bg-gray-800 {
+      background: rgba(15, 23, 42, 0.78) !important;
+      border-color: rgba(51, 65, 85, 0.9) !important;
+      box-shadow: 0 24px 55px rgba(0,0,0,0.28) !important;
+    }
+
+    /* Dashboard hero as a banking card */
+    #view-dashboard > .max-w-6xl:first-child > div {
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 92% 12%, rgba(246, 199, 107, 0.32), transparent 19%),
+        radial-gradient(circle at 0% 100%, rgba(16, 185, 129, 0.42), transparent 33%),
+        linear-gradient(135deg, #0f172a 0%, #172554 48%, #064e3b 100%) !important;
+      border: 1px solid rgba(246, 199, 107, 0.2);
+      box-shadow: 0 32px 75px rgba(15, 23, 42, 0.28) !important;
+    }
+
+    #view-dashboard > .max-w-6xl:first-child > div::before {
+      content: '';
+      position: absolute;
+      width: 260px;
+      height: 260px;
+      border-radius: 999px;
+      right: -90px;
+      top: -95px;
+      border: 1px solid rgba(255,255,255,0.18);
+      background: rgba(255,255,255,0.045);
+    }
+
+    #view-dashboard > .max-w-6xl:first-child > div::after {
+      content: 'WALI 9 P2S';
+      position: absolute;
+      right: 28px;
+      bottom: 18px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.23em;
+      color: rgba(255,255,255,0.28);
+    }
+
+    #dash-saldo {
+      letter-spacing: -0.06em !important;
+      text-shadow: 0 12px 34px rgba(0,0,0,0.2);
+    }
+
+    #filter-period {
+      background: rgba(255,255,255,0.13) !important;
+      border: 1px solid rgba(255,255,255,0.28) !important;
+      border-radius: 999px !important;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.12);
+      color: #ffffff !important;
+    }
+
+    #view-dashboard .-mt-10 > div {
+      border-radius: 28px !important;
+      transform: translateZ(0);
+    }
+
+    #view-dashboard .-mt-10 > div:hover,
+    #dash-history > div:hover,
+    #view-rekap tbody tr:hover {
+      transform: translateY(-2px);
+    }
+
+    #view-dashboard .-mt-10 > div,
+    #dash-history > div,
+    #view-dashboard .grid + .grid > div {
+      transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+    }
+
+    #view-dashboard .-mt-10 > div:first-child {
+      border-left: 4px solid #10b981 !important;
+    }
+
+    #view-dashboard .-mt-10 > div:nth-child(2) {
+      border-left: 4px solid #ef4444 !important;
+    }
+
+    #dash-in, #dash-out { letter-spacing: -0.035em; }
+
+    #view-dashboard h3,
+    #view-input h2,
+    #view-rekap h2,
+    #view-setting h2 {
+      letter-spacing: -0.035em;
+    }
+
+    #dash-history > div {
+      border-radius: 24px !important;
+      border: 1px solid rgba(226,232,240,0.86) !important;
+    }
+
+    /* Forms: cleaner banking inputs */
+    input, select, textarea {
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
+    }
+
+    #view-input input:not([type="radio"]),
+    #view-input textarea,
+    #view-setting input,
+    #view-rekap select,
+    #filter-period {
+      min-height: 46px;
+    }
+
+    #view-input input:not([type="radio"]),
+    #view-input textarea,
+    #view-setting input,
+    #view-rekap select,
+    #login-pass {
+      background: rgba(248, 250, 252, 0.96) !important;
+      border-color: rgba(203, 213, 225, 0.78) !important;
+      border-radius: 18px !important;
+    }
+
+    html.dark #view-input input:not([type="radio"]),
+    html.dark #view-input textarea,
+    html.dark #view-setting input,
+    html.dark #view-rekap select,
+    html.dark #login-pass {
+      background: rgba(2, 6, 23, 0.46) !important;
+      border-color: rgba(71, 85, 105, 0.86) !important;
+    }
+
+    #view-input input:focus,
+    #view-input textarea:focus,
+    #view-setting input:focus,
+    #view-rekap select:focus,
+    #login-pass:focus {
+      border-color: rgba(16, 185, 129, 0.78) !important;
+      box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.12) !important;
+    }
+
+    #view-input form > div:first-child .grid label > div {
+      border-radius: 22px !important;
+      padding-block: 1rem !important;
+      background: rgba(248,250,252,0.8);
+    }
+
+    html.dark #view-input form > div:first-child .grid label > div {
+      background: rgba(15,23,42,0.64);
+    }
+
+    #view-input form > div:first-child .grid label > input:checked + div {
+      box-shadow: 0 16px 30px rgba(15,23,42,0.10);
+    }
+
+    #container-bukti > div {
+      border-radius: 24px !important;
+      background: linear-gradient(180deg, rgba(248,250,252,0.8), rgba(255,255,255,0.88)) !important;
+      border-color: rgba(148, 163, 184, 0.42) !important;
+    }
+
+    html.dark #container-bukti > div {
+      background: linear-gradient(180deg, rgba(15,23,42,0.78), rgba(2,6,23,0.42)) !important;
+      border-color: rgba(71,85,105,0.88) !important;
+    }
+
+    #img-preview {
+      height: 132px !important;
+      width: min(100%, 260px);
+      border-radius: 18px !important;
+    }
+
+    button[type="submit"],
+    #view-login button[onclick="doLogin()"],
+    #view-setting button[onclick="submitTambahTahun()"],
+    #view-setting button[onclick="submitUbahPassword()"] {
+      border-radius: 18px !important;
+      background: linear-gradient(135deg, #0f172a, #1e293b 55%, #047857) !important;
+      box-shadow: 0 18px 35px rgba(15, 23, 42, 0.22) !important;
+    }
+
+    button[type="submit"]:hover,
+    #view-login button[onclick="doLogin()"]:hover,
+    #view-setting button[onclick="submitTambahTahun()"]:hover,
+    #view-setting button[onclick="submitUbahPassword()"]:hover {
+      filter: brightness(1.08);
+      transform: translateY(-1px);
+    }
+
+    /* Rekap table, filter bar, export actions */
+    #view-rekap > div > div:nth-of-type(1) {
+      border-radius: 26px !important;
+    }
+
+    #view-rekap table thead {
+      background: #0f172a !important;
+      color: #ffffff !important;
+    }
+
+    html.dark #view-rekap table thead {
+      background: #020617 !important;
+    }
+
+    #view-rekap table th {
+      letter-spacing: 0.05em;
+      font-size: 0.72rem;
+    }
+
+    #view-rekap tbody tr {
+      transition: background-color 0.2s ease, transform 0.2s ease;
+    }
+
+    #pagination-controls {
+      background: rgba(248,250,252,0.72) !important;
+    }
+
+    html.dark #pagination-controls {
+      background: rgba(2,6,23,0.38) !important;
+    }
+
+    #pagination-controls button,
+    #view-rekap button,
+    #view-dashboard button {
+      border-radius: 16px !important;
+    }
+
+    /* Smaller screens: preserve breathing room */
+    @media (max-width: 767px) {
+      .page { padding-bottom: 112px !important; }
+      #view-dashboard > .max-w-6xl:first-child { padding-left: 0 !important; padding-right: 0 !important; }
+      #view-dashboard > .max-w-6xl:first-child > div {
+        border-radius: 0 0 34px 34px !important;
+      }
+      #view-dashboard > .max-w-6xl:first-child > div::after {
+        right: 22px;
+        bottom: 14px;
+      }
+      #dash-saldo { font-size: clamp(2rem, 10vw, 2.75rem) !important; }
+      #view-dashboard .-mt-10 { gap: 0.85rem !important; }
+      #view-dashboard .-mt-10 > div { padding: 1rem !important; border-radius: 22px !important; }
+      #view-input, #view-rekap, #view-setting { padding-left: 1rem !important; padding-right: 1rem !important; }
+      #view-input h2, #view-rekap h2, #view-setting h2 { font-size: 1.45rem !important; }
+      #view-rekap > div > div:nth-of-type(1) { padding: 0.9rem !important; }
+      #view-rekap .overflow-x-auto { border-radius: 22px; }
+    }
+
   </style>
 </head>
-<body class="antialiased text-gray-800 bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+<body class="antialiased text-gray-800 bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
 
 <div class="app-container">
   
@@ -325,10 +733,10 @@
           <i class="fa-solid fa-mosque"></i>
         </div>
         <h1 class="text-2xl font-bold text-center text-gray-800 dark:text-white">Wali 9 P2S</h1>
-        <p class="text-gray-500 dark:text-gray-400 text-center mb-10">Ponpes Abu Zairi</p>
+        <p class="text-gray-500 dark:text-gray-400 text-center mb-10">Manajemen Keuangan Ponpes Abu Zairi</p>
         
         <div class="w-full max-w-sm bg-white dark:bg-gray-800 p-6 md:p-8 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700">
-          <h2 class="text-lg font-semibold mb-4 text-center text-gray-800 dark:text-white">Masuk Akun</h2>
+          <h2 class="text-lg font-semibold mb-4 text-center text-gray-800 dark:text-white">Masuk Panel Kas</h2>
           
           <div class="relative mb-4">
             <input type="password" id="login-pass" placeholder="Masukkan Password" class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 transition pr-12" onkeypress="if(event.key === 'Enter') doLogin()">
@@ -361,7 +769,7 @@
             </div>
             <div class="flex justify-between items-end">
               <div>
-                <p class="text-sm opacity-90 mb-1 text-emerald-50">Total Saldo Kas</p>
+                <p class="text-sm opacity-90 mb-1 text-emerald-50">Saldo Kas Utama</p>
                 <h1 class="text-4xl md:text-5xl font-bold tracking-tight" id="dash-saldo">Rp 0</h1>
               </div>
               <select id="filter-period" onchange="loadDashboard()" class="bg-white/20 text-white text-xs md:text-sm rounded-lg px-2 py-1.5 md:px-3 md:py-2 backdrop-blur-sm border border-white/30 focus:outline-none cursor-pointer">
@@ -412,7 +820,7 @@
 
         <div class="px-6 md:px-10 mt-6 md:mt-10">
           <div class="flex justify-between items-end mb-4">
-            <h3 class="font-bold text-gray-800 dark:text-white md:text-lg">Transaksi Terakhir</h3>
+            <h3 class="font-bold text-gray-800 dark:text-white md:text-lg">Mutasi Terakhir</h3>
             <button onclick="navTo('rekap')" class="text-xs md:text-sm font-semibold text-emerald-500 hover:text-emerald-600 transition">Lihat Semua</button>
           </div>
           <div id="dash-history" class="space-y-3 md:space-y-4">
@@ -485,7 +893,7 @@
 
     <div id="view-rekap" class="page px-6 md:px-10 pt-6">
       <div class="max-w-5xl mx-auto">
-        <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-6">Rekapitulasi</h2>
+        <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-6">Rekap Mutasi Kas</h2>
         
         <!-- Filter & Aksi Export -->
         <div class="bg-white dark:bg-gray-800 p-4 md:p-5 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 mb-6 flex flex-col md:flex-row gap-4 justify-between items-center">
@@ -603,7 +1011,7 @@
         
         <div class="text-center mt-10 opacity-50 pb-8">
           <p class="text-xs md:text-sm font-medium dark:text-white">Aplikasi Wali 9 P2S Abu Zairi</p>
-          <p class="text-[10px] md:text-xs dark:text-gray-300">Versi 1.7 • Stable Murni Database</p>
+          <p class="text-[10px] md:text-xs dark:text-gray-300">Versi 1.8 • Premium Banking UI</p>
         </div>
       </div>
     </div>
