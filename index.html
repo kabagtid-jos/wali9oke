@@ -452,6 +452,10 @@
               </tbody>
             </table>
           </div>
+          <!-- AREA TOMBOL PAGINATION (NEXT/PREV) -->
+          <div id="pagination-controls" class="p-4 border-t border-gray-100 dark:border-gray-800 flex justify-between items-center bg-white dark:bg-gray-800 text-sm text-gray-600 dark:text-gray-400">
+            <!-- Injected via JS -->
+          </div>
         </div>
       </div>
     </div>
@@ -716,9 +720,13 @@
     if (res.chart) renderChart(res.chart.labels, res.chart.dataIn, res.chart.dataOut);
 
     let histHTML = '';
-    if(res.history.length === 0) histHTML = '<p class="text-sm text-gray-400 text-center py-4">Belum ada transaksi.</p>';
     
-    res.history.forEach(tx => {
+    // PERBAIKAN: Membatasi agar hanya 5 riwayat terbaru yang tampil di dashboard
+    let recentHistory = res.history.slice(0, 5); 
+
+    if(recentHistory.length === 0) histHTML = '<p class="text-sm text-gray-400 text-center py-4">Belum ada transaksi.</p>';
+    
+    recentHistory.forEach(tx => {
       const isMin = tx.tipe === 'Pengeluaran';
       histHTML += `
         <div class="bg-white dark:bg-gray-800 p-4 md:p-5 rounded-2xl shadow-sm flex items-center justify-between border border-gray-50 dark:border-gray-700 hover:shadow-md transition">
@@ -739,125 +747,14 @@
     });
     document.getElementById('dash-history').innerHTML = histHTML;
   }
+  // --- AKHIR BLOK FUNGSI UPLOAD GAMBAR ---
 
-  // --- LOGIC UPLOAD GAMBAR ---
-  let selectedFile = null;
-
-  document.querySelectorAll('input[name="tipe"]').forEach(radio => {
-    radio.addEventListener('change', (e) => {
-      const container = document.getElementById('container-bukti');
-      if (e.target.value === 'Pengeluaran') {
-        container.classList.remove('hidden');
-      } else {
-        container.classList.add('hidden');
-        removeImage(new Event('click')); // Reset foto jika kembali ke pemasukan
-      }
-    });
-  });
-
-  function previewImage(event) {
-    const file = event.target.files[0];
-    if(file) {
-      selectedFile = file;
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        document.getElementById('img-preview').src = e.target.result;
-        document.getElementById('preview-container').classList.remove('hidden');
-        document.getElementById('upload-placeholder').classList.add('hidden');
-      }
-      reader.readAsDataURL(file);
-    }
-  }
-
-  function removeImage(event) {
-    event.stopPropagation();
-    selectedFile = null;
-    const input = document.getElementById('input-bukti');
-    if(input) input.value = '';
-    document.getElementById('preview-container').classList.add('hidden');
-    document.getElementById('upload-placeholder').classList.remove('hidden');
-  }
-
-  function formatRupiahInput(element) {
-    let value = element.value.replace(/[^0-9]/g, '');
-    if (value !== '') {
-      element.value = parseInt(value, 10).toLocaleString('id-ID');
-    } else {
-      element.value = '';
-    }
-  }
-
-  async function submitTransaksi() {
-    const tipe = document.querySelector('input[name="tipe"]:checked').value;
-    const tanggal = document.getElementById('input-tanggal').value;
-    const nominal = document.getElementById('input-nominal').value.replace(/\./g, '');
-    const keterangan = document.getElementById('input-keterangan').value;
-
-    if(!tanggal || !nominal || !keterangan) {
-      return Swal.fire({ title: 'Peringatan', text: 'Lengkapi semua field', icon: 'warning' });
-    }
-
-    let buktiLink = "";
-
-    if (tipe === 'Pengeluaran' && selectedFile) {
-      showLoader();
-      document.querySelector('#loader p').innerText = "Mengunggah foto...";
-      
-      const IMGBB_API_KEY = "d9e6199d92abbae9ddea7cbca2361bc3"; 
-      const formData = new FormData();
-      
-      const base64Image = document.getElementById('img-preview').src.split(',')[1];
-      formData.append('image', base64Image);
-
-      try {
-        const resImg = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
-          method: 'POST',
-          body: formData
-        });
-        const dataImg = await resImg.json();
-        
-        if (dataImg.success) {
-          buktiLink = dataImg.data.url;
-        } else {
-          let errorMsg = dataImg.error ? dataImg.error.message : "Gagal mendapatkan respon dari server.";
-          if (errorMsg.toLowerCase().includes("invalid api")) {
-            errorMsg = "Wajib masukkan API Key milik Anda! Daftar gratis di api.imgbb.com lalu ubah kode IMGBB_API_KEY di file HTML.";
-          }
-          throw new Error(errorMsg);
-        }
-      } catch (error) {
-        hideLoader();
-        return Swal.fire({ title: 'Upload Gagal', text: error.message, icon: 'error' });
-      }
-      document.querySelector('#loader p').innerText = "Menyimpan data...";
-    } else if (!selectedFile) {
-       showLoader();
-    }
-
-    const payload = {
-      tipe: tipe,
-      tanggal: tanggal,
-      nominal: nominal,
-      keterangan: keterangan,
-      bukti: buktiLink
-    };
-
-    const res = await callAPI('simpanTransaksi', payload);
-    hideLoader();
-
-    if(res && res.success) {
-      Swal.fire({ title: 'Berhasil', text: res.message, icon: 'success' });
-      document.getElementById('form-input').reset();
-      document.getElementById('input-tanggal').valueAsDate = new Date();
-      removeImage(new Event('click')); 
-    } else if (res) {
-      Swal.fire({ title: 'Gagal', text: res.message, icon: 'error' });
-    }
-  }
-
-  // --- LOGIC REKAPITULASI DATA ---
   let allRekapData = [];
   let currentFilteredData = [];
+  
+  // Variabel untuk Pagination
+  let currentPage = 1;
+  const itemsPerPage = 10;
 
   async function loadRekap() {
     showLoader();
@@ -910,15 +807,21 @@
       return matchBulan && matchTahun;
     });
 
-    renderRekapTable(currentFilteredData);
+    currentPage = 1; // Reset kembali ke halaman 1 setiap kali filter diubah
+    renderRekapTable();
   }
 
-  function renderRekapTable(data) {
+  function renderRekapTable() {
+    // Logika Pemotongan Data (Slicing) untuk Pagination
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const paginatedData = currentFilteredData.slice(startIndex, endIndex);
+
     let html = '';
-    if(data.length === 0) {
+    if(paginatedData.length === 0) {
       html = '<tr><td colspan="5" class="p-10 text-center text-gray-400 dark:text-gray-500"><i class="fa-regular fa-folder-open text-4xl mb-3 opacity-50 block"></i>Data tidak ditemukan</td></tr>';
     } else {
-      data.forEach(tx => {
+      paginatedData.forEach(tx => {
         const isMin = tx.tipe === 'Pengeluaran';
         html += `
           <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition group">
@@ -940,6 +843,44 @@
       });
     }
     document.getElementById('rekap-list').innerHTML = html;
+    
+    // Menjalankan fungsi untuk merender tombol Next/Prev
+    renderPaginationControls();
+  }
+
+  function renderPaginationControls() {
+    const totalPages = Math.ceil(currentFilteredData.length / itemsPerPage) || 1;
+    const container = document.getElementById('pagination-controls');
+    
+    // Jika tidak ada data, kosongkan area kontrol
+    if (currentFilteredData.length === 0) {
+      container.innerHTML = '';
+      return;
+    }
+
+    const prevDisabled = currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200';
+    const nextDisabled = currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200';
+
+    container.innerHTML = `
+      <button onclick="changePage(-1)" class="px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 transition font-medium ${prevDisabled}" ${currentPage === 1 ? 'disabled' : ''}>
+        <i class="fa-solid fa-chevron-left text-[10px] mr-1"></i> Prev
+      </button>
+      <span class="font-semibold text-xs md:text-sm text-gray-800 dark:text-gray-200">Halaman ${currentPage} / ${totalPages}</span>
+      <button onclick="changePage(1)" class="px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 transition font-medium ${nextDisabled}" ${currentPage === totalPages ? 'disabled' : ''}>
+        Next <i class="fa-solid fa-chevron-right text-[10px] ml-1"></i>
+      </button>
+    `;
+  }
+
+  function changePage(step) {
+    const totalPages = Math.ceil(currentFilteredData.length / itemsPerPage);
+    const newPage = currentPage + step;
+    
+    // Pastikan halaman tidak kurang dari 1 dan tidak melebihi total halaman
+    if(newPage >= 1 && newPage <= totalPages) {
+      currentPage = newPage;
+      renderRekapTable();
+    }
   }
 
   function exportExcel() {
