@@ -233,6 +233,55 @@
       background: #ffffff;
     }
 
+    .pdf-mobile-fallback {
+      width: 100%;
+      min-height: 360px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 1.5rem;
+      background: #ffffff;
+      color: #111827;
+    }
+
+    html.dark .pdf-mobile-fallback {
+      background: #111827;
+      color: #f9fafb;
+    }
+
+    .pdf-mobile-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fee2e2;
+      color: #ef4444;
+      font-size: 1.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .pdf-open-mobile-btn {
+      margin-top: 1rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      width: 100%;
+      max-width: 280px;
+      min-height: 46px;
+      border: 0;
+      border-radius: 0.9rem;
+      background: #2563eb;
+      color: #ffffff;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 12px 24px rgba(37, 99, 235, 0.22);
+    }
+
     .pdf-preview-actions {
       width: 100% !important;
       gap: 0.75rem !important;
@@ -1848,20 +1897,47 @@
       headStyles: { fillColor: [16, 185, 129] } 
     });
 
-    const pdfBlobUrl = doc.output('bloburl');
+    const pdfBlob = doc.output('blob');
+    const pdfBlobUrl = URL.createObjectURL(pdfBlob);
     const pdfPreviewUrl = `${pdfBlobUrl}#toolbar=0&navpanes=0&scrollbar=1&view=FitH`;
+    const isMobileBrowser = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) || window.innerWidth < 768;
+
+    const openPdf = () => {
+      const link = document.createElement('a');
+      link.href = pdfBlobUrl;
+      link.target = '_blank';
+      link.rel = 'noopener';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    };
+
+    const previewHTML = isMobileBrowser ? `
+      <div class="pdf-preview-wrapper">
+        <div class="pdf-mobile-fallback">
+          <div class="pdf-mobile-icon"><i class="fa-solid fa-file-pdf"></i></div>
+          <h3 class="text-base font-bold mb-2">PDF berhasil dibuat</h3>
+          <p class="text-sm text-gray-500 dark:text-gray-300 leading-relaxed max-w-xs">
+            Browser HP biasanya tidak bisa menampilkan preview PDF langsung di dalam popup. Tekan tombol di bawah untuk membuka PDF di tab baru, atau gunakan tombol Download.
+          </p>
+          <button type="button" id="open-pdf-mobile-btn" class="pdf-open-mobile-btn">
+            <i class="fa-solid fa-up-right-from-square"></i> Buka PDF
+          </button>
+        </div>
+      </div>
+    ` : `
+      <div class="pdf-preview-wrapper">
+        <iframe
+          src="${pdfPreviewUrl}"
+          class="pdf-preview-frame"
+          title="Preview Laporan PDF">
+        </iframe>
+      </div>
+    `;
     
     Swal.fire({
       title: 'Preview Laporan PDF',
-      html: `
-        <div class="pdf-preview-wrapper">
-          <iframe
-            src="${pdfPreviewUrl}"
-            class="pdf-preview-frame"
-            title="Preview Laporan PDF">
-          </iframe>
-        </div>
-      `,
+      html: previewHTML,
       width: 'auto',
       padding: 0,
       heightAuto: false,
@@ -1869,6 +1945,13 @@
         popup: 'pdf-preview-popup',
         htmlContainer: 'pdf-preview-html',
         actions: 'pdf-preview-actions'
+      },
+      didOpen: () => {
+        const openBtn = document.getElementById('open-pdf-mobile-btn');
+        if (openBtn) openBtn.addEventListener('click', openPdf);
+      },
+      willClose: () => {
+        setTimeout(() => URL.revokeObjectURL(pdfBlobUrl), 30000);
       },
       showCancelButton: true,
       confirmButtonText: '<i class="fa-solid fa-download mr-1"></i> Download',
