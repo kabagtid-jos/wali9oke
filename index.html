@@ -1685,6 +1685,34 @@
     }
   }
 
+  function isActionNotRecognized(res) {
+    const message = String(res?.message || res?.error || '').toLowerCase();
+    return message.includes('aksi tidak dikenali') ||
+      message.includes('aksi tidak dikenal') ||
+      message.includes('action tidak dikenali') ||
+      message.includes('action tidak dikenal') ||
+      message.includes('unknown action') ||
+      message.includes('invalid action');
+  }
+
+  async function callAPIWithActionFallback(actions, payload = {}) {
+    let lastResponse = null;
+    for (const action of actions) {
+      const res = await callAPI(action, payload);
+      lastResponse = res;
+      if (!res || !isActionNotRecognized(res)) {
+        if (res && typeof res === 'object') res._usedAction = action;
+        return res;
+      }
+      console.warn(`Action ${action} belum dikenali server. Mencoba nama action lain...`);
+    }
+    return lastResponse;
+  }
+
+  function buildServerUpdateNotice(featureName, actionName) {
+    return `${featureName} belum bisa diproses karena Google Apps Script pada API_URL belum memiliki handler action ${actionName}. Update Code.gs dengan handler editTransaksi/hapusTransaksi lalu deploy ulang Web App.`;
+  }
+
   function togglePassword(inputId, iconId) {
     const input = document.getElementById(inputId);
     const icon = document.getElementById(iconId);
@@ -2395,8 +2423,13 @@
   }
 
   function buildMutationPayload(tx, updatedPayload = {}) {
+    const identity = getTxIdentity(tx);
     return {
-      id: getTxIdentity(tx),
+      // Beberapa server lama memakai nama field berbeda, jadi dikirim lengkap agar lebih kompatibel.
+      id: identity,
+      rowId: tx?.rowId || tx?.rowID || tx?.row || tx?.Row || '',
+      rowIndex: tx?.rowIndex || tx?.nomor || tx?.No || tx?.no || '',
+      nomor: tx?.nomor || tx?.No || tx?.no || '',
       ref: buildTxReference(tx),
       payload: updatedPayload
     };
@@ -2461,7 +2494,7 @@
     if (!result.isConfirmed) return;
 
     showLoader();
-    const res = await callAPI('editTransaksi', buildMutationPayload(tx, result.value));
+    const res = await callAPIWithActionFallback(['editTransaksi', 'updateTransaksi', 'ubahTransaksi'], buildMutationPayload(tx, result.value));
     hideLoader();
 
     if (res && res.success) {
@@ -2471,7 +2504,7 @@
     } else {
       Swal.fire({
         title: 'Belum Bisa Edit',
-        text: (res && res.message) || 'Frontend sudah siap, tetapi Google Apps Script belum mendukung action editTransaksi.',
+        text: (res && !isActionNotRecognized(res) && res.message) || buildServerUpdateNotice('Edit transaksi', 'editTransaksi'),
         icon: 'warning'
       });
     }
@@ -2510,7 +2543,7 @@
     if (!result.isConfirmed) return;
 
     showLoader();
-    const res = await callAPI('hapusTransaksi', { ...buildMutationPayload(tx), password: result.value });
+    const res = await callAPIWithActionFallback(['hapusTransaksi', 'deleteTransaksi', 'hapusData', 'deleteData', 'deleteTransaction'], { ...buildMutationPayload(tx), password: result.value });
     hideLoader();
 
     if (res && res.success) {
@@ -2520,7 +2553,7 @@
     } else {
       Swal.fire({
         title: 'Belum Bisa Hapus',
-        text: (res && res.message) || 'Frontend sudah siap, tetapi Google Apps Script belum mendukung action hapusTransaksi.',
+        text: (res && !isActionNotRecognized(res) && res.message) || buildServerUpdateNotice('Hapus transaksi', 'hapusTransaksi'),
         icon: 'warning'
       });
     }
