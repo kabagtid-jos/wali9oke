@@ -1,0 +1,25 @@
+{
+  "name": "Kas Wali 9 P2S Abu Zairi",
+  "short_name": "Kas Wali 9",
+  "description": "Aplikasi manajemen kas Wali 9 P2S Abu Zairi",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/pwa-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
